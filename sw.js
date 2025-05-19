@@ -1,35 +1,36 @@
 // sw.js - Service Worker
 
-const CACHE_NAME = 'body-and-soul-cache-v1';
+const CACHE_NAME = 'body-and-soul-cache-v2'; // Version after Bulma was added
 const urlsToCache = [
   '/',
   '/index.html',
-  '/style.css',
+  '/style.css', // Kept for minimal custom styles
   '/script.js',
   '/manifest.json',
-  // Add paths to your actual icon files here, e.g.:
+  'https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css', // Cache Bulma
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
   '/icons/apple-touch-icon.png'
-  // You might also want to cache static educational content if you have separate HTML/text files for it
 ];
 
-// Install event: Cache essential assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        const requests = urlsToCache.map(url => {
+            if (url.startsWith('http')) {
+                return new Request(url, { mode: 'no-cors' });
+            }
+            return url;
+        });
+        return cache.addAll(requests);
       })
-      .catch(err => {
-        console.error('Failed to open cache or add URLs:', err);
-      })
+      .catch(err => console.error('Failed to open cache or add URLs:', err))
   );
-  self.skipWaiting(); // Force the waiting service worker to become the active service worker
+  self.skipWaiting();
 });
 
-// Activate event: Clean up old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
@@ -43,55 +44,28 @@ self.addEventListener('activate', event => {
       );
     })
   );
-  return self.clients.claim(); // Take control of all open clients
+  return self.clients.claim();
 });
 
-// Fetch event: Serve cached assets if available, otherwise fetch from network
 self.addEventListener('fetch', event => {
-  // We only want to cache GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-
-        // Not in cache - fetch from network
+        if (response) return response;
         return fetch(event.request).then(
           networkResponse => {
-            // Check if we received a valid response
-            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'opaque')) {
               return networkResponse;
             }
-
-            // IMPORTANT: Clone the response. A response is a stream
-            // and because we want the browser to consume the response
-            // as well as the cache consuming the response, we need
-            // to clone it so we have two streams.
             const responseToCache = networkResponse.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
             return networkResponse;
           }
-        ).catch(error => {
-          // Network request failed, try to serve a fallback page or generic offline message
-          // For a PWA, you might want a specific offline.html page
-          console.error('Fetch failed; returning offline page or error:', error);
-          // For simplicity, if the request is for navigation, you might return a cached offline page.
-          // if (event.request.mode === 'navigate') {
-          //   return caches.match('/offline.html'); // You'd need to cache an offline.html
-          // }
-          // Otherwise, just let the error propagate for other asset types
-        });
+        ).catch(error => console.error('Fetch failed:', error));
       })
   );
 });
