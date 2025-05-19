@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body & Soul</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png"> <!-- Create a 180x180px icon -->
+
+    <!-- Favicon (optional but good practice) -->
+    <link rel="icon" href="icons/icon-32x32.png" type="image/png">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Body & Soul</h1>
+            <div class="user-info">
+                <span id="userNameDisplay"></span>
+                <span id="userPointsDisplay"></span>
+            </div>
+        </header>
+
+        <main id="appContent">
+            <!-- Screen: Welcome -->
+            <section id="welcomeScreen" class="screen">
+                <h2>Welcome to Your Wellness Journey!</h2>
+                <p>Embark on a 10-week challenge to transform your body and mind.</p>
+                <button id="startChallengeBtn" class="btn btn-primary">Start the Challenge</button>
+                <button id="continueChallengeBtn" class="btn btn-secondary hidden">Continue Challenge</button>
+            </section>
+
+            <!-- Screen: Registration -->
+            <section id="registrationScreen" class="screen hidden">
+                <h2>Let's Get Started</h2>
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender:</label>
+                        <select id="gender" required>
+                            <option value="">Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight (kg):</label>
+                        <input type="number" id="weight" step="0.1" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Height (cm):</label>
+                        <input type="number" id="height" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save & Next</button>
+                </form>
+            </section>
+
+            <!-- Screen: Baseline Questionnaire -->
+            <section id="baselineScreen" class="screen hidden">
+                <h2>Baseline Assessment</h2>
+                <p>Let's record your starting point.</p>
+                <form id="baselineForm">
+                    <div class="form-group">
+                        <label for="cardioCapacity">Cardio Capacity (e.g., minutes run/walk, distance):</label>
+                        <input type="text" id="cardioCapacity" placeholder="e.g., 5 min run" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="strengthReps">Strength Reps (e.g., push-ups, squats):</label>
+                        <input type="text" id="strengthReps" placeholder="e.g., 10 push-ups" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exerciseTrack">Choose Your Exercise Track:</label>
+                        <select id="exerciseTrack" required>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Week 1</button>
+                </form>
+            </section>
+
+            <!-- Screen: Main Dashboard -->
+            <section id="dashboardScreen" class="screen hidden">
+                <div class="dashboard-header">
+                    <h2 id="dashboardTitle">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2>
+                    <div class="progress-container">
+                        <span>Challenge Progress:</span>
+                        <progress id="challengeProgress" value="0" max="100"></progress>
+                    </div>
+                </div>
+
+                <div id="dailyTasksContainer" class="tasks-grid">
+                    <!-- Task sections will be dynamically populated here by JS -->
+                </div>
+
+                <button id="motivateMeBtn" class="btn btn-accent">Motivate Me Now!</button>
+                <button id="completeDayBtn" class="btn btn-primary">Mark Day as Complete</button>
+                <div id="dailyCompletionMessage" class="feedback-message hidden"></div>
+            </section>
+
+            <!-- Modal for Motivate Me Now -->
+            <div id="motivateModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-button" data-target-modal="motivateModal">×</span>
+                    <h3>Need a Boost?</h3>
+                    <p>Which area are you feeling unmotivated about?</p>
+                    <select id="motivationAreaSelect">
+                        <option value="sleep">Sleep</option>
+                        <option value="weightControl">Weight Control</option>
+                        <option value="exercise">Exercise</option>
+                        <option value="peaceOfMind">Peace of Mind</option>
+                        <option value="makeMeQuit">Make Me Quit</option>
+                    </select>
+                    <button id="getMotivationBtn" class="btn btn-primary">Get Motivation</button>
+                    <div id="motivationMessage" class="modal-response"></div>
+                </div>
+            </div>
+
+            <!-- Modal for LLM Chat (Peace of Mind) -->
+            <div id="llmChatModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-button" data-target-modal="llmChatModal">×</span>
+                    <h3>Talk About Stress Triggers</h3>
+                    <p>Describe what's on your mind. (This is a simulated chat)</p>
+                    <textarea id="llmChatInput" rows="4" placeholder="Type here..."></textarea>
+                    <button id="sendToLlmBtn" class="btn btn-primary">Send</button>
+                    <div id="llmChatResponse" class="modal-response"></div>
+                </div>
+            </div>
+
+            <!-- Educational Content Modal (Example) -->
+            <div id="educationModal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-button" data-target-modal="educationModal">×</span>
+                    <h3 id="educationTitle"></h3>
+                    <p id="educationText"></p>
+                </div>
+            </div>
+
+            <!-- Simple Notification / Reminder Area -->
+            <div id="inAppNotification" class="notification-bar hidden">
+                <p id="inAppNotificationText"></p>
+                <button id="dismissNotificationBtn">×</button>
+            </div>
+
+        </main>
+
+        <footer class="app-footer">
+            <p>© <span id="currentYear"></span> Body & Soul App. All rights reserved. (Client-side simulation)</p>
+            <p><a href="#" id="communityLinkPlaceholder">Community Forum (Placeholder)</a></p>
+        </footer>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
