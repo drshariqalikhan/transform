@@ -2,7 +2,7 @@
   "name": "Body & Soul - Your Wellness Journey",
   "short_name": "Body&Soul",
   "description": "A 10-week challenge to improve your physical and mental well-being.",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "scope": "/",
   "background_color": "#ffffff",
