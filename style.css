@@ -1,60 +1,59 @@
-/* style.css - Minimal custom styles with Bulma (Initial Integration State) */
+/* style.css - Bulma with Card Centering and Swipe-to-Hide */
 
-.card .content p:not(:last-child) {
-    margin-bottom: 0.75em;
-}
-.card .content .field:not(:last-child) {
-    margin-bottom: 0.75rem;
-}
-.card .content .task-item {
-    margin-bottom: 0.5rem;
+/* Basic App Wrapper to help with potential full height */
+.app-wrapper {
+    min-height: 100vh;
     display: flex;
-    align-items: center;
+    flex-direction: column;
 }
-.card .content .task-item input[type="checkbox"] {
-    margin-right: 0.5em;
-}
-.card .content .task-display {
-    font-style: italic;
-    font-size: 0.9em;
-    margin-top: 0.5em;
-}
-.card .content .small-input {
-    width: 60px !important;
-    padding: 0.25em 0.5em !important;
-    margin: 0 0.25em;
-    text-align: center;
-}
-.card .content hr {
-    margin: 0.75rem 0;
+main#appContent {
+    flex-grow: 1;
 }
 
-.is-fixed-bottom-custom {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 35;
-    width: auto;
-    margin: 1rem !important;
+/* --- Swipe-to-Hide Card Styling --- */
+.task-card.is-swiping {
+    transition: transform 0.1s linear; /* Quick feedback during swipe */
 }
-
-/* Bulma's is-hidden should be sufficient, but if needed: */
-/* .is-hidden { display: none !important; } */
-
-.select.is-fullwidth, .select.is-fullwidth select {
-    width: 100%;
+.task-card.is-hiding-swipe {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translateX(-100%) rotate(-5deg); /* Swipe left animation */
+    opacity: 0;
 }
-
-.task-card.completed-task {
+.task-card { /* Base card style for swipe interaction */
+    position: relative;
+    user-select: none; /* Prevent text selection during swipe */
+    /* touch-action: pan-y; */ /* Allows vertical scroll, might interfere with horizontal swipe if not careful */
+}
+.task-card.is-swipable { /* Class added by JS when task is completed */
+    cursor: grab; /* Indicate it can be grabbed */
+}
+.task-card.completed-task { /* Visual cue for completed task */
     border-left: 5px solid hsl(141, 53%, 53%); /* Bulma's success color */
     background-color: hsl(141, 53%, 96%); /* Lighter success */
 }
+/* If using dark mode, you'd add specific dark mode completed-task styles here */
+/* html.dark-mode .task-card.completed-task { ... } */
 
-.task-card .button.is-small {
-    margin-left: 0.5em;
-    vertical-align: middle;
-}
-.card-header-title .checkbox {
-    vertical-align: middle;
+
+/* Minimal custom styles from previous Bulma integration */
+.card .content p:not(:last-child) { margin-bottom: 0.75em; }
+.card .content .field:not(:last-child) { margin-bottom: 0.75rem; }
+.card .content .task-item { margin-bottom: 0.5rem; display: flex; align-items: center; }
+.card .content .task-item input[type="checkbox"] { margin-right: 0.5em; }
+.card .content .task-display { font-style: italic; font-size: 0.9em; margin-top: 0.5em; }
+.card .content .small-input { width: 60px !important; padding: 0.25em 0.5em !important; margin: 0 0.25em; text-align: center; }
+.card .content hr { margin: 0.75rem 0; }
+.is-fixed-bottom-custom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 35; width: auto; margin: 1rem !important; }
+.select.is-fullwidth, .select.is-fullwidth select { width: 100%; }
+.task-card .button.is-small { margin-left: 0.5em; vertical-align: middle; }
+.card-header-title .checkbox { vertical-align: middle; }
+
+/* Ensure navbar items in dropdown are styled correctly if burger was used */
+/* (Not strictly needed for this version as burger isn't active by default, but good for consistency) */
+@media screen and (max-width: 1023px) {
+    .navbar-menu {
+        background-color: white; /* Default Bulma behavior */
+    }
+    /* If you add dark mode: */
+    /* html.dark-mode .navbar-menu { background-color: var(--bulma-navbar-dropdown-background-color, #363636); } */
 }

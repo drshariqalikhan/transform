@@ -1,4 +1,4 @@
-// script.js (Reverted to state after Bulma CSS was first implemented - WITH FIX)
+// script.js (Bulma + Centered Cards + Swipe-to-Hide)
 document.addEventListener('DOMContentLoaded', () => {
     const App = {
         elements: {
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
             registrationScreen: document.getElementById('registrationScreen'),
             baselineScreen: document.getElementById('baselineScreen'),
             dashboardScreen: document.getElementById('dashboardScreen'),
+            // NO settingsScreen, darkModeToggle elements in this version
 
             startChallengeBtn: document.getElementById('startChallengeBtn'),
             continueChallengeBtn: document.getElementById('continueChallengeBtn'),
@@ -14,10 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
             completeDayBtn: document.getElementById('completeDayBtn'),
             homeButton: document.getElementById('homeButton'),
 
-            registrationForm: document.getElementById('registrationForm'), // Key element for the bug
+            registrationForm: document.getElementById('registrationForm'),
             baselineForm: document.getElementById('baselineForm'),
 
-            // ... (all other elements as previously defined for this reverted state)
             dashboardTitle: document.getElementById('dashboardTitle'),
             currentWeekDisplay: document.getElementById('currentWeekDisplay'),
             challengeProgress: document.getElementById('challengeProgress'),
@@ -25,7 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dailyCompletionMessage: document.getElementById('dailyCompletionMessage'),
             userNameDisplay: document.getElementById('userNameDisplay'),
             userPointsDisplay: document.getElementById('userPointsDisplay'),
+
             motivateModal: document.getElementById('motivateModal'),
+            // ... other modal elements from Bulma integration state ...
             motivationAreaSelect: document.getElementById('motivationAreaSelect'),
             getMotivationBtn: document.getElementById('getMotivationBtn'),
             motivationMessage: document.getElementById('motivationMessage'),
@@ -36,29 +38,34 @@ document.addEventListener('DOMContentLoaded', () => {
             educationModal: document.getElementById('educationModal'),
             educationTitle: document.getElementById('educationTitle'),
             educationText: document.getElementById('educationText'),
+
             inAppNotification: document.getElementById('inAppNotification'),
             inAppNotificationText: document.getElementById('inAppNotificationText'),
             dismissNotificationBtn: document.getElementById('dismissNotificationBtn'),
             currentYear: document.getElementById('currentYear'),
         },
 
-        state: { /* ... (same as the reverted state) ... */
+        state: {
             currentScreen: 'welcome',
             userData: null,
             currentChallengeWeek: 1,
             totalChallengeWeeks: 10,
             today: new Date().toISOString().split('T')[0],
             isDayCompleted: false,
+            swipe: { // Re-added swipe state
+                touchstartX: 0, touchstartY: 0, touchendX: 0, touchendY: 0,
+                activeCard: null, threshold: 50, maxVerticalOffset: 75
+            },
         },
-        DB_KEY: 'bodyAndSoulAppUserBulma',
+        DB_KEY: 'bodyAndSoulAppUserBulmaSwipeV1', // Updated key for this version
         LLM_CHAT_API_ENDPOINT: 'https://api.example.com/llm-chat',
         MOTIVATION_API_ENDPOINT: 'https://api.example.com/motivate',
 
         init() {
-            console.log("App Initializing (Bulma Base Version - Fix)...");
+            console.log("App Initializing (Bulma + Swipe)...");
             this.registerServiceWorker();
-            this.loadData();
-            this.setupEventListeners(); // This is where the fix is critical
+            this.loadData(); // Includes migration for tasksCompleted
+            this.setupEventListeners();
             this.updateFooterYear();
 
             if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) {
@@ -76,154 +83,295 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         setupEventListeners() {
-            console.log("Setting up event listeners (Bulma Base Version - Fix)...");
-
-            if (this.elements.startChallengeBtn) {
-                this.elements.startChallengeBtn.addEventListener('click', () => {
-                    if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) {
-                        if (confirm("Are you sure you want to start over? All progress will be lost.")) {
-                            this.state.userData = this.getDefaultUserData(); this.saveData(); this.navigateTo('registration');
-                        }
-                    } else { this.navigateTo('registration'); }
-                });
-            } else { console.error("startChallengeBtn not found"); }
-
-            if (this.elements.continueChallengeBtn) {
-                this.elements.continueChallengeBtn.addEventListener('click', () => this.navigateTo('dashboard'));
-            } else { console.error("continueChallengeBtn not found"); }
-
-            // **** THE FIX IS HERE ****
-            if (this.elements.registrationForm) {
-                this.elements.registrationForm.addEventListener('submit', (e) => {
-                    console.log("Registration form submitted!"); // For debugging
-                    e.preventDefault(); // Prevent default form submission
-                    this.handleRegistration(); // Call the correct handler
-                });
-            } else {
-                console.error("Registration form element not found!");
-            }
-            // **** END FIX ****
-
-            if (this.elements.baselineForm) {
-                this.elements.baselineForm.addEventListener('submit', (e) => { e.preventDefault(); this.handleBaseline(); });
-            } else { console.error("baselineForm not found"); }
-
-            if (this.elements.homeButton) {
-                 this.elements.homeButton.addEventListener('click', (e) => { e.preventDefault(); if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) { this.navigateTo('dashboard'); } else { this.navigateTo('welcome'); } });
-            } else { console.error("homeButton not found"); }
-            
+            console.log("Setting up event listeners (Bulma + Swipe)...");
+            // ... (Standard listeners from Bulma integration state)
+            if (this.elements.startChallengeBtn) { this.elements.startChallengeBtn.addEventListener('click', () => { if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) { if (confirm("Are you sure you want to start over? All progress will be lost.")) { this.state.userData = this.getDefaultUserData(); this.saveData(); this.navigateTo('registration'); } } else { this.navigateTo('registration'); } }); }
+            if (this.elements.continueChallengeBtn) { this.elements.continueChallengeBtn.addEventListener('click', () => this.navigateTo('dashboard')); }
+            if (this.elements.registrationForm) { this.elements.registrationForm.addEventListener('submit', (e) => { e.preventDefault(); this.handleRegistration(); }); }
+            if (this.elements.baselineForm) { this.elements.baselineForm.addEventListener('submit', (e) => { e.preventDefault(); this.handleBaseline(); }); }
+            if (this.elements.homeButton) { this.elements.homeButton.addEventListener('click', (e) => { e.preventDefault(); if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) { this.navigateTo('dashboard'); } else { this.navigateTo('welcome'); } }); }
             document.querySelectorAll('.delete, .closeModalBtn').forEach(btn => { btn.addEventListener('click', (e) => { const targetModalId = e.currentTarget.dataset.targetModal || e.currentTarget.closest('.modal')?.id; if (targetModalId) this.closeModal(targetModalId); }); });
             document.querySelectorAll('.modal-background').forEach(bg => { bg.addEventListener('click', (e) => { const targetModalId = e.currentTarget.closest('.modal')?.id; if (targetModalId) this.closeModal(targetModalId); }); });
-            
             if (this.elements.motivateMeBtn) { this.elements.motivateMeBtn.addEventListener('click', () => this.showModal('motivateModal')); }
             if (this.elements.getMotivationBtn) { this.elements.getMotivationBtn.addEventListener('click', () => this.handleGetMotivation());}
             if (this.elements.sendToLlmBtn) { this.elements.sendToLlmBtn.addEventListener('click', () => this.handleLlmChatSend());}
             if (this.elements.completeDayBtn) { this.elements.completeDayBtn.addEventListener('click', () => this.handleCompleteDay()); }
             if (this.elements.dismissNotificationBtn) { this.elements.dismissNotificationBtn.addEventListener('click', () => this.elements.inAppNotification?.classList.add('is-hidden')); }
+
+            // Swipe Event Listeners for Task Cards
+            if (this.elements.dailyTasksContainer) {
+                this.elements.dailyTasksContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+                this.elements.dailyTasksContainer.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+                this.elements.dailyTasksContainer.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
+                console.log("Swipe listeners attached to dailyTasksContainer.");
+            } else { console.error("dailyTasksContainer not found for swipe listeners."); }
             
             console.log("Event listeners setup complete.");
         },
 
-        handleRegistration() {
-            console.log("handleRegistration function called."); // For debugging
+        // --- Swipe to Hide Logic (Re-added) ---
+        handleTouchStart(event) {
+            const card = event.target.closest('.task-card.is-swipable'); // Only swipable if completed
+            if (!card) return;
+            this.state.swipe.activeCard = card;
+            this.state.swipe.touchstartX = event.changedTouches[0].screenX;
+            this.state.swipe.touchstartY = event.changedTouches[0].screenY;
+        },
+        handleTouchMove(event) {
+            if (!this.state.swipe.activeCard) return;
+            const touchcurrentX = event.changedTouches[0].screenX;
+            const deltaX = touchcurrentX - this.state.swipe.touchstartX;
+            const touchcurrentY = event.changedTouches[0].screenY;
+            const deltaY = Math.abs(touchcurrentY - this.state.swipe.touchstartY);
 
-            // Ensure elements are correctly fetched within this function's scope
-            // or rely on this.elements if they are guaranteed to be populated.
-            const nameEl = document.getElementById('name');
-            const ageEl = document.getElementById('age');
-            const genderEl = document.getElementById('gender');
-            const weightEl = document.getElementById('weight');
-            const heightEl = document.getElementById('height');
-
-            if (!nameEl || !ageEl || !genderEl || !weightEl || !heightEl) {
-                console.error("One or more registration form fields not found inside handleRegistration.");
-                this.showInAppNotification("Form processing error. Please try again.", "is-danger");
-                return;
+            if (deltaX < -10 && deltaY < this.state.swipe.maxVerticalOffset) { // Swiping left
+                event.preventDefault(); // Prevent vertical scroll
+                this.state.swipe.activeCard.classList.add('is-swiping');
+                const limitedDeltaX = Math.max(deltaX, -this.state.swipe.activeCard.offsetWidth * 0.75);
+                this.state.swipe.activeCard.style.transform = `translateX(${limitedDeltaX}px)`;
             }
+        },
+        handleTouchEnd(event) {
+            if (!this.state.swipe.activeCard) return;
+            this.state.swipe.touchendX = event.changedTouches[0].screenX;
+            const deltaX = this.state.swipe.touchendX - this.state.swipe.touchstartX;
+            const card = this.state.swipe.activeCard;
 
-            const name = nameEl.value.trim();
-            const age = parseInt(ageEl.value);
-            const gender = genderEl.value;
-            const weight = parseFloat(weightEl.value);
-            const height = parseInt(heightEl.value);
+            card.classList.remove('is-swiping');
+            card.style.transform = ''; 
 
-            if (!name || isNaN(age) || age <= 0 || !gender || isNaN(weight) || weight <=0 || isNaN(height) || height <= 0) {
-                this.showInAppNotification("Please fill all fields correctly with valid values.", "is-danger");
-                return;
+            if (deltaX < -this.state.swipe.threshold) { // Swiped left enough
+                card.classList.add('is-hiding-swipe');
+                const taskKey = card.id.replace('-task', '');
+                
+                const todayLog = this.getTodayLog();
+                if (todayLog && todayLog.tasksCompleted && todayLog.tasksCompleted[taskKey]) {
+                    todayLog.tasksCompleted[taskKey].swipedHidden = true; // Update data model
+                    this.saveData();
+                }
+                setTimeout(() => {
+                    card.parentElement?.classList.add('is-hidden'); // Hide the column
+                }, 300); 
             }
-
-            this.state.userData.name = name;
-            this.state.userData.age = age;
-            this.state.userData.gender = gender;
-            this.state.userData.initialWeight = weight;
-            this.state.userData.currentWeight = weight;
-            this.state.userData.height = height;
-            this.state.userData.isRegistered = true;
-            this.state.userData.startDate = this.state.today;
-            this.state.userData.lastLoginDate = this.state.today;
-
-            const heightInMeters = height / 100;
-            this.state.userData.idealWeight = (22.5 * Math.pow(heightInMeters, 2)).toFixed(1);
-            this.state.userData.caloricDeficitTarget = 500;
-
-            this.saveData();
-            this.addPoints(10, "Registration Complete"); // Gamification
-            this.navigateTo('baseline');
+            this.state.swipe.activeCard = null;
         },
 
-        // ... (All other methods: navigateTo, loadData, saveData, getDefaultUserData, updateUserDisplay,
-        //      handleBaseline, renderDashboard, updateCurrentWeek, getTodayLog,
-        //      task rendering functions like renderSleepTask, their update functions,
-        //      addCardToDashboard, checkTaskCompletion, updateTaskCheckboxState,
-        //      checkDayCompletionStatus, handleCompleteDay, isWeekComplete, handleWeekCompletion,
-        //      addPoints, handleGetMotivation, handleLlmChatSend, showModal, closeModal,
-        //      showEducationModal, checkForMissedDays, registerServiceWorker,
-        //      requestNotificationPermission, sendNotification, showInAppNotification, updateFooterYear
-        //      ARE THE SAME AS THE "Bulma initial integration state" provided in the previous "revert" response)
-        //      Ensure these are all present in your final script.js file.
-        //      For example:
-        navigateTo(screenName) { const allScreens = ['welcomeScreen', 'registrationScreen', 'baselineScreen', 'dashboardScreen']; allScreens.forEach(id => { this.elements[id]?.classList.add('is-hidden'); }); if (this.elements[screenName + 'Screen']) { this.elements[screenName + 'Screen'].classList.remove('is-hidden'); this.state.currentScreen = screenName; } else { console.error("Screen not found:", screenName); this.elements.welcomeScreen?.classList.remove('is-hidden'); this.state.currentScreen = 'welcome'; } if (screenName === 'dashboard') this.renderDashboard(); },
-        loadData() { const data = localStorage.getItem(this.DB_KEY); if (data) { this.state.userData = JSON.parse(data); this.state.userData.dailyLogs = this.state.userData.dailyLogs || {}; this.state.userData.points = this.state.userData.points || 0; this.state.userData.badges = this.state.userData.badges || []; this.state.userData.makeMeQuit = this.state.userData.makeMeQuit || { behavior: null, trigger: null, substitution: null, log: {} }; this.state.userData.peaceOfMind = this.state.userData.peaceOfMind || { moodStressLog: {}, gratitudeLog: {} }; this.state.currentChallengeWeek = this.state.userData.currentChallengeWeek || 1; const todayLog = this.state.userData.dailyLogs[this.state.today]; this.state.isDayCompleted = todayLog ? todayLog.dayCompleted || false : false; } else { this.state.userData = this.getDefaultUserData(); } },
-        // ... and so on for all other methods ...
-        // The key is the `setupEventListeners` and `handleRegistration` above are corrected.
-        // All other functions from the fully reverted `script.js` provided previously should be included.
-        // (Full repetition omitted for brevity, but they should be present)
+        loadData() { // Modified to handle new tasksCompleted structure
+            const data = localStorage.getItem(this.DB_KEY);
+            if (data) {
+                this.state.userData = JSON.parse(data);
+                this.state.userData.dailyLogs = this.state.userData.dailyLogs || {};
+                // Migration for tasksCompleted: ensure it's an object
+                Object.keys(this.state.userData.dailyLogs).forEach(dateKey => {
+                    const log = this.state.userData.dailyLogs[dateKey];
+                    if (log.tasksCompleted) {
+                        Object.keys(log.tasksCompleted).forEach(taskKey => {
+                            if (typeof log.tasksCompleted[taskKey] === 'boolean') {
+                                log.tasksCompleted[taskKey] = { completed: log.tasksCompleted[taskKey], swipedHidden: false };
+                            }
+                        });
+                    } else {
+                        log.tasksCompleted = {}; // Initialize if it doesn't exist
+                    }
+                });
+                // ... (rest of loadData properties as in Bulma initial integration)
+                this.state.userData.points = this.state.userData.points || 0;
+                this.state.userData.badges = this.state.userData.badges || [];
+                this.state.userData.makeMeQuit = this.state.userData.makeMeQuit || { behavior: null, trigger: null, substitution: null, log: {} };
+                this.state.userData.peaceOfMind = this.state.userData.peaceOfMind || { moodStressLog: {}, gratitudeLog: {} };
+                this.state.currentChallengeWeek = this.state.userData.currentChallengeWeek || 1;
+                const todayLog = this.getTodayLog(); // Use getTodayLog to ensure structure
+                this.state.isDayCompleted = todayLog ? todayLog.dayCompleted || false : false;
+            } else {
+                this.state.userData = this.getDefaultUserData();
+            }
+        },
+
+        getDefaultUserData() { // tasksCompleted is an object
+            return {
+                name: '', age: null, gender: '', initialWeight: null, currentWeight: null, height: null, 
+                idealWeight: null, caloricDeficitTarget: null, baselineCardio: '', baselineStrength: '', 
+                exerciseTrack: 'beginner', isRegistered: false, hasCompletedBaseline: false, 
+                startDate: null, currentChallengeWeek: 1, lastLoginDate: this.state.today, 
+                dailyLogs: {}, 
+                points: 0, badges: [],
+                makeMeQuit: { behavior: null, trigger: null, substitution: null, log: {} },
+                peaceOfMind: { moodStressLog: {}, gratitudeLog: {} }
+            };
+        },
+
+        getTodayLog(createIfNotExist = false) { // Ensures tasksCompleted is an object
+             if (!this.state.userData.dailyLogs[this.state.today] && createIfNotExist) {
+                this.state.userData.dailyLogs[this.state.today] = {
+                    sleep: { bedtime: '', waketime: '', targetMet: null, duration: null },
+                    weightControl: { mealtimes: '', water: '', food: '', nonWaterDrinks: '', junkFoodStopped: false, fruitSnacks: false, mealTimesAdhered: false, caloriesTracked: null },
+                    exerciseCompleted: false, // Note: some tasks might still be boolean initially
+                    peaceOfMind: { mindfulnessCompleted: false, moodBefore: null, stressBefore: null, moodAfter: null, stressAfter: null, breathingCompleted: false, enjoyableActivityCompleted: false },
+                    makeMeQuit: { instancesLogged: null, contextLogged: '', triggerAvoided: false, substitutionPracticed: false },
+                    tasksCompleted: {}, // Key: taskKey, Value: { completed: boolean, swipedHidden: boolean }
+                    dayCompleted: false
+                };
+            }
+            // Ensure tasksCompleted items are objects, for any taskKey that might exist
+            const log = this.state.userData.dailyLogs[this.state.today];
+            if(log && log.tasksCompleted){
+                Object.keys(log.tasksCompleted).forEach(taskKey => {
+                    if(typeof log.tasksCompleted[taskKey] === 'boolean'){
+                        log.tasksCompleted[taskKey] = { completed: log.tasksCompleted[taskKey], swipedHidden: false };
+                    }
+                });
+            }
+            return this.state.userData.dailyLogs[this.state.today];
+        },
+
+        addCardToDashboard(id, innerHTML, columnClass = 'is-one-third-tablet is-half-mobile') {
+            const taskKey = id.replace('-task', '');
+            const todayLog = this.getTodayLog();
+            let isSwipedHidden = false;
+            if (todayLog && todayLog.tasksCompleted && todayLog.tasksCompleted[taskKey] && typeof todayLog.tasksCompleted[taskKey] === 'object') {
+                isSwipedHidden = todayLog.tasksCompleted[taskKey].swipedHidden;
+            }
+
+            const columnDiv = document.createElement('div');
+            columnDiv.className = `column ${columnClass}`;
+            if (isSwipedHidden) { // If already marked as swiped, hide its column
+                columnDiv.classList.add('is-hidden');
+            }
+
+            const card = document.createElement('div');
+            card.id = id;
+            card.className = 'card task-card mb-3';
+            card.innerHTML = innerHTML;
+            
+            // Add is-swipable if completed and not hidden
+            // This will be more robustly handled by updateTaskCheckboxState
+            // const taskStatus = todayLog?.tasksCompleted?.[taskKey];
+            // if (taskStatus?.completed && !taskStatus?.swipedHidden) {
+            //     card.classList.add('is-swipable');
+            // }
+            
+            columnDiv.appendChild(card);
+            this.elements.dailyTasksContainer?.appendChild(columnDiv);
+        },
+
+        checkTaskCompletion(taskKey, isSubstantiallyFilled) {
+            const todayLog = this.getTodayLog(true); // Ensure log exists
+            todayLog.tasksCompleted = todayLog.tasksCompleted || {};
+            
+            let currentStatus = todayLog.tasksCompleted[taskKey];
+            let wasSwipedHidden = false;
+            if (typeof currentStatus === 'object') {
+                wasSwipedHidden = currentStatus.swipedHidden || false;
+            }
+
+            todayLog.tasksCompleted[taskKey] = {
+                completed: isSubstantiallyFilled,
+                swipedHidden: wasSwipedHidden // Retain swiped status if unchecking
+            };
+
+            const mainCheckbox = document.getElementById(`${taskKey}TaskDone`);
+            if (mainCheckbox) mainCheckbox.checked = isSubstantiallyFilled;
+            
+            const card = document.getElementById(`${taskKey}-task`);
+            if(card) {
+                if(isSubstantiallyFilled) {
+                    card.classList.add('completed-task', 'is-swipable');
+                } else {
+                    card.classList.remove('completed-task', 'is-swipable');
+                    // If uncompleted, ensure it's not hidden by swipe
+                    if (todayLog.tasksCompleted[taskKey].swipedHidden) {
+                        todayLog.tasksCompleted[taskKey].swipedHidden = false;
+                        card.parentElement?.classList.remove('is-hidden');
+                        card.classList.remove('is-hiding-swipe');
+                    }
+                }
+            }
+            this.saveData();
+            this.checkDayCompletionStatus();
+        },
+
+        updateTaskCheckboxState(taskKey, forceState = undefined) {
+            const todayLog = this.getTodayLog();
+            if (!todayLog || !todayLog.tasksCompleted) return;
+
+            let taskStatus = todayLog.tasksCompleted[taskKey];
+            let isComplete;
+
+            if (typeof taskStatus === 'object') {
+                isComplete = forceState !== undefined ? forceState : taskStatus.completed;
+            } else { // Fallback if somehow it's still a boolean (e.g. exerciseCompleted)
+                isComplete = forceState !== undefined ? forceState : taskStatus || false;
+                // Upgrade structure if it's a simple boolean here
+                todayLog.tasksCompleted[taskKey] = { completed: isComplete, swipedHidden: false };
+            }
+            
+            const mainCheckbox = document.getElementById(`${taskKey}TaskDone`);
+            if (mainCheckbox) mainCheckbox.checked = isComplete;
+            
+            const card = document.getElementById(`${taskKey}-task`);
+            if (card) {
+                 if(isComplete) {
+                    card.classList.add('completed-task', 'is-swipable');
+                 } else {
+                    card.classList.remove('completed-task', 'is-swipable');
+                 }
+
+                 // If it was swiped hidden but is no longer complete, unhide it
+                 if (!isComplete && todayLog.tasksCompleted[taskKey]?.swipedHidden) {
+                     card.parentElement?.classList.remove('is-hidden');
+                     card.classList.remove('is-hiding-swipe');
+                     todayLog.tasksCompleted[taskKey].swipedHidden = false;
+                     this.saveData(); // Save change if un-hiding
+                 }
+            }
+        },
+
+        checkDayCompletionStatus() { // Modified to check object's 'completed' property
+            const todayLog = this.getTodayLog();
+            if (!this.elements.completeDayBtn || !this.elements.dailyCompletionMessage) return;
+            if (!todayLog || !todayLog.tasksCompleted) {
+                this.elements.completeDayBtn.disabled = true; return;
+            }
+            const allTasks = ['sleep', 'weightControl', 'exercise', 'peaceOfMind', 'makeMeQuit'];
+            const completedTasksCount = allTasks.filter(task => todayLog.tasksCompleted[task]?.completed).length;
+            // ... rest of function is the same ...
+            const allTasksCompleted = completedTasksCount === allTasks.length; this.elements.completeDayBtn.disabled = !allTasksCompleted || this.state.isDayCompleted; this.elements.completeDayBtn.textContent = this.state.isDayCompleted ? "Day Already Completed" : (allTasksCompleted ? "Mark Day as Complete" : `Complete ${allTasks.length - completedTasksCount} more tasks`); if (this.state.isDayCompleted) { this.elements.dailyCompletionMessage.textContent = "Great job! You've completed all tasks for today."; this.elements.dailyCompletionMessage.className = 'notification is-success mt-3'; this.elements.dailyCompletionMessage.classList.remove('is-hidden'); } else { this.elements.dailyCompletionMessage.classList.add('is-hidden'); }
+        },
+
+        // ... (All other core methods like handleRegistration, task rendering, modals, etc.,
+        //      should be the same as the "Bulma initial integration" state.
+        //      Ensure they are included from that version, adapting taskStatus checks in render functions
+        //      to use `todayLogFull.tasksCompleted?.[taskKey]?.completed || false` for checkboxes.)
+        // (Full repetition omitted for brevity)
         updateFooterYear() { if (this.elements.currentYear) this.elements.currentYear.textContent = new Date().getFullYear(); },
         registerServiceWorker() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered:', reg.scope)).catch(err => console.error('SW reg failed:', err)); } },
         requestNotificationPermission() { if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') { Notification.requestPermission().then(perm => { if (perm === 'granted') this.showInAppNotification("Notifications enabled!", 'is-success'); else this.showInAppNotification("Notifications permission denied.", 'is-danger'); }); } else if (Notification.permission === 'denied') this.showInAppNotification("Notifications are disabled. Check browser settings.", 'is-warning'); },
         sendNotification(title, body) { if ('Notification' in window && Notification.permission === 'granted') { navigator.serviceWorker.ready.then(reg => { reg.showNotification(title, { body: body, icon: 'icons/icon-192x192.png', badge: 'icons/icon-72x72.png' }); }); } else { this.showInAppNotification(`${title}: ${body}`, 'is-info'); } },
         showInAppNotification(message, type = 'is-info', duration = 5000) { if (!this.elements.inAppNotification || !this.elements.inAppNotificationText) return; this.elements.inAppNotificationText.textContent = message; this.elements.inAppNotification.className = 'notification is-fixed-bottom-custom p-3 m-3'; this.elements.inAppNotification.classList.add(type); this.elements.inAppNotification.classList.remove('is-hidden'); setTimeout(() => this.elements.inAppNotification?.classList.add('is-hidden'), duration); },
         saveData() { try { localStorage.setItem(this.DB_KEY, JSON.stringify(this.state.userData)); this.updateUserDisplay(); } catch (e) { console.error("Error saving data:", e); this.showInAppNotification("Could not save progress.", "is-danger"); } },
-        getDefaultUserData() { return { name: '', age: null, gender: '', initialWeight: null, currentWeight: null, height: null, idealWeight: null, caloricDeficitTarget: null, baselineCardio: '', baselineStrength: '', exerciseTrack: 'beginner', isRegistered: false, hasCompletedBaseline: false, startDate: null, currentChallengeWeek: 1, lastLoginDate: this.state.today, dailyLogs: {}, points: 0, badges: [], makeMeQuit: { behavior: null, trigger: null, substitution: null, log: {} }, peaceOfMind: { moodStressLog: {}, gratitudeLog: {} } }; },
         updateUserDisplay() { if (this.elements.userNameDisplay) this.elements.userNameDisplay.textContent = (this.state.userData && this.state.userData.name) ? `Hi, ${this.state.userData.name}!` : ''; if (this.elements.userPointsDisplay) this.elements.userPointsDisplay.textContent = `${this.state.userData?.points || 0}`; },
         handleBaseline() { const cardio = document.getElementById('cardioCapacity')?.value.trim(); const strength = document.getElementById('strengthReps')?.value.trim(); const track = document.getElementById('exerciseTrack')?.value; if (!cardio || !strength || !track) { this.showInAppNotification("Please fill all baseline fields.", "is-danger"); return; } this.state.userData.baselineCardio = cardio; this.state.userData.baselineStrength = strength; this.state.userData.exerciseTrack = track; this.state.userData.hasCompletedBaseline = true; this.state.userData.currentChallengeWeek = 1; this.saveData(); this.addPoints(20, "Baseline Complete"); this.navigateTo('dashboard'); },
         renderDashboard() { if (!this.state.userData || !this.state.userData.isRegistered || !this.state.userData.hasCompletedBaseline) { this.navigateTo('welcome'); return; } this.updateCurrentWeek(); if (this.elements.currentWeekDisplay) this.elements.currentWeekDisplay.textContent = this.state.currentChallengeWeek; if (this.elements.challengeProgress) this.elements.challengeProgress.value = (this.state.currentChallengeWeek / this.state.totalChallengeWeeks) * 100; if (this.elements.dailyTasksContainer) this.elements.dailyTasksContainer.innerHTML = ''; this.renderSleepTask(); this.renderWeightControlTask(); this.renderExerciseTask(); this.renderPeaceOfMindTask(); this.renderMakeMeQuitTask(); this.checkDayCompletionStatus(); },
         updateCurrentWeek() { if (!this.state.userData.startDate) return; const startDate = new Date(this.state.userData.startDate); const todayDate = new Date(this.state.today); const diffTime = Math.abs(todayDate - startDate); const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); let currentWeek = Math.floor(diffDays / 7) + 1; currentWeek = Math.min(currentWeek, this.state.totalChallengeWeeks); this.state.currentChallengeWeek = currentWeek; this.state.userData.currentChallengeWeek = currentWeek; },
-        getTodayLog(createIfNotExist = false) { if (!this.state.userData.dailyLogs[this.state.today] && createIfNotExist) { this.state.userData.dailyLogs[this.state.today] = { sleep: { bedtime: '', waketime: '', targetMet: null, duration: null }, weightControl: { mealtimes: '', water: '', food: '', nonWaterDrinks: '', junkFoodStopped: false, fruitSnacks: false, mealTimesAdhered: false, caloriesTracked: null }, exerciseCompleted: false, peaceOfMind: { mindfulnessCompleted: false, moodBefore: null, stressBefore: null, moodAfter: null, stressAfter: null, breathingCompleted: false, enjoyableActivityCompleted: false }, makeMeQuit: { instancesLogged: null, contextLogged: '', triggerAvoided: false, substitutionPracticed: false }, tasksCompleted: {}, dayCompleted: false }; } return this.state.userData.dailyLogs[this.state.today]; },
-        addCardToDashboard(id, innerHTML, columnClass = 'is-one-third-tablet is-half-mobile') { const columnDiv = document.createElement('div'); columnDiv.className = `column ${columnClass}`; const card = document.createElement('div'); card.id = id; card.className = 'card task-card mb-3'; card.innerHTML = innerHTML; columnDiv.appendChild(card); this.elements.dailyTasksContainer?.appendChild(columnDiv); },
-        checkTaskCompletion(taskKey, isSubstantiallyFilled) { const todayLog = this.getTodayLog(); todayLog.tasksCompleted = todayLog.tasksCompleted || {}; todayLog.tasksCompleted[taskKey] = isSubstantiallyFilled; const mainCheckbox = document.getElementById(`${taskKey}TaskDone`); if (mainCheckbox) mainCheckbox.checked = isSubstantiallyFilled; const card = document.getElementById(`${taskKey}-task`); if(card) { if(isSubstantiallyFilled) { card.classList.add('completed-task'); } else { card.classList.remove('completed-task'); } } this.saveData(); this.checkDayCompletionStatus(); },
-        updateTaskCheckboxState(taskKey, forceState = undefined) { const todayLog = this.getTodayLog(); if (!todayLog || !todayLog.tasksCompleted) return; const isComplete = forceState !== undefined ? forceState : todayLog.tasksCompleted[taskKey] || false; const mainCheckbox = document.getElementById(`${taskKey}TaskDone`); if (mainCheckbox) mainCheckbox.checked = isComplete; const card = document.getElementById(`${taskKey}-task`); if (card) { if(isComplete) card.classList.add('completed-task'); else card.classList.remove('completed-task'); } },
-        renderSleepTask() { const W = this.state.currentChallengeWeek; const todayLogFull = this.getTodayLog(true); const todayLog = todayLogFull.sleep; const isTaskCompleted = todayLogFull.tasksCompleted?.sleep || false; let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="sleepTaskDone" data-task="sleep" ${isTaskCompleted ? 'checked':''}>Sleep</label></p></div> <div class="card-content content">`; if (W === 1) { content += `<div class="field"><label class="label is-small" for="bedtime">Bedtime:</label><div class="control"><input class="input is-small" type="time" id="bedtime" value="${todayLog.bedtime || ''}"></div></div><div class="field"><label class="label is-small" for="waketime">Wake-up Time:</label><div class="control"><input class="input is-small" type="time" id="waketime" value="${todayLog.waketime || ''}"></div></div>`; } else { const targetBedtime = this.state.userData.sleepTargetBedtime || "22:30"; const targetWaketime = this.state.userData.sleepTargetWaketime || "06:30"; content += `<p class="is-size-7">Target: Bed by ${targetBedtime}, Awake by ${targetWaketime}</p><div class="field"><label class="label is-small" for="bedtime">Actual Bedtime:</label><div class="control"><input class="input is-small" type="time" id="bedtime" value="${todayLog.bedtime || ''}"></div></div><div class="field"><label class="label is-small" for="waketime">Actual Wake-up Time:</label><div class="control"><input class="input is-small" type="time" id="waketime" value="${todayLog.waketime || ''}"></div></div><div id="sleepTargetStatus" class="task-display">Status: ${todayLog.targetMet === null ? 'Enter times' : (todayLog.targetMet ? 'Goal Met!' : 'Goal Missed')}</div>`; } content += `<div id="sleepDurationDisplay" class="task-display">Total Sleep: ${todayLog.duration || 'N/A'}</div></div>`; this.addCardToDashboard('sleep-task', content); document.getElementById('bedtime')?.addEventListener('change', (e) => this.updateSleepData('bedtime', e.target.value)); document.getElementById('waketime')?.addEventListener('change', (e) => this.updateSleepData('waketime', e.target.value)); this.updateTaskCheckboxState('sleep'); },
-        updateSleepData(field, value) { const todayLog = this.getTodayLog().sleep; todayLog[field] = value; if (todayLog.bedtime && todayLog.waketime) { const bedtimeDate = new Date(`2000-01-01T${todayLog.bedtime}`); let waketimeDate = new Date(`2000-01-01T${todayLog.waketime}`); if (waketimeDate < bedtimeDate) waketimeDate.setDate(waketimeDate.getDate() + 1); const diffMs = waketimeDate - bedtimeDate; const diffHours = (diffMs / (1000 * 60 * 60)).toFixed(1); todayLog.duration = `${diffHours} hours`; const displayEl = document.getElementById('sleepDurationDisplay'); if(displayEl) displayEl.textContent = `Total Sleep: ${todayLog.duration}`; if (this.state.currentChallengeWeek > 1) { const targetBed = this.state.userData.sleepTargetBedtime || "22:30"; const targetWake = this.state.userData.sleepTargetWaketime || "06:30"; const bedDiff = Math.abs(new Date(`2000-01-01T${todayLog.bedtime}`) - new Date(`2000-01-01T${targetBed}`)) / (1000*60); const wakeDiff = Math.abs(new Date(`2000-01-01T${todayLog.waketime}`) - new Date(`2000-01-01T${targetWake}`)) / (1000*60); todayLog.targetMet = bedDiff <= 30 && wakeDiff <= 30; const statusEl = document.getElementById('sleepTargetStatus'); if(statusEl) statusEl.textContent = `Status: ${todayLog.targetMet ? 'Goal Met!' : 'Goal Missed'}`; if(todayLog.targetMet) this.addPoints(2, "Sleep Target Met"); } } this.saveData(); this.checkTaskCompletion('sleep', !!(todayLog.bedtime && todayLog.waketime)); },
+        updateSleepData(field, value) { const todayLog = this.getTodayLog(true).sleep; todayLog[field] = value; if (todayLog.bedtime && todayLog.waketime) { const bedtimeDate = new Date(`2000-01-01T${todayLog.bedtime}`); let waketimeDate = new Date(`2000-01-01T${todayLog.waketime}`); if (waketimeDate < bedtimeDate) waketimeDate.setDate(waketimeDate.getDate() + 1); const diffMs = waketimeDate - bedtimeDate; const diffHours = (diffMs / (1000 * 60 * 60)).toFixed(1); todayLog.duration = `${diffHours} hours`; const displayEl = document.getElementById('sleepDurationDisplay'); if(displayEl) displayEl.textContent = `Total Sleep: ${todayLog.duration}`; if (this.state.currentChallengeWeek > 1) { const targetBed = this.state.userData.sleepTargetBedtime || "22:30"; const targetWake = this.state.userData.sleepTargetWaketime || "06:30"; const bedDiff = Math.abs(new Date(`2000-01-01T${todayLog.bedtime}`) - new Date(`2000-01-01T${targetBed}`)) / (1000*60); const wakeDiff = Math.abs(new Date(`2000-01-01T${todayLog.waketime}`) - new Date(`2000-01-01T${targetWake}`)) / (1000*60); todayLog.targetMet = bedDiff <= 30 && wakeDiff <= 30; const statusEl = document.getElementById('sleepTargetStatus'); if(statusEl) statusEl.textContent = `Status: ${todayLog.targetMet ? 'Goal Met!' : 'Goal Missed'}`; if(todayLog.targetMet) this.addPoints(2, "Sleep Target Met"); } } this.saveData(); this.checkTaskCompletion('sleep', !!(todayLog.bedtime && todayLog.waketime)); },
         renderWeightControlTask() { const W = this.state.currentChallengeWeek; const todayLogFull = this.getTodayLog(true); const todayLog = todayLogFull.weightControl; const userData = this.state.userData; const isTaskCompleted = this.isWeightControlTaskSubstantiallyFilled(); let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="weightControlTaskDone" data-task="weightControl" ${isTaskCompleted ? 'checked':''}>Weight Control</label></p></div><div class="card-content content">`; if (W === 1) { content += `<p class="is-size-7">Ideal: ${userData.idealWeight} kg. Deficit: ${userData.caloricDeficitTarget} kcal.</p><div class="field"><label class="label is-small" for="wcMealTimes">Mealtimes:</label><div class="control"><input class="input is-small" type="text" id="wcMealTimes" placeholder="8am, 1pm, 6pm" value="${todayLog.mealtimes || ''}"></div></div><div class="field"><label class="label is-small" for="wcWater">Water (L):</label><div class="control"><input class="input is-small" type="number" step="0.1" id="wcWater" placeholder="2.5" value="${todayLog.water || ''}"></div></div><div class="field"><label class="label is-small" for="wcFood">Food Log:</label><div class="control"><textarea class="textarea is-small" id="wcFood" rows="2" placeholder="Oats, Chicken salad...">${todayLog.food || ''}</textarea></div></div><div class="field"><label class="label is-small" for="wcNonWaterDrinks">Non-water drinks:</label><div class="control"><input class="input is-small" type="text" id="wcNonWaterDrinks" placeholder="1 coffee, 1 soda" value="${todayLog.nonWaterDrinks || ''}"></div></div>`; } else if (W === 2) { content += `<p class="is-size-7">Continue tracking. Reduce junk, use fruit snacks, set meal times.</p>${this.renderWeightControlTaskInputs(todayLog)}<div class="task-item"><label class="checkbox"><input type="checkbox" id="wcJunkFood" ${todayLog.junkFoodStopped ? 'checked' : ''}> Stop non-water/junk food.</label></div><div class="task-item"><label class="checkbox"><input type="checkbox" id="wcFruitSnacks" ${todayLog.fruitSnacks ? 'checked' : ''}> Replace snacks with fruits.</label></div><div class="task-item"><label class="checkbox"><input type="checkbox" id="wcMealTimesAdhered" ${todayLog.mealTimesAdhered ? 'checked' : ''}> Adhere to set meal times.</label></div>`; } else { content += `<p class="is-size-7">Continue tracking. Maintain ${userData.caloricDeficitTarget} kcal deficit.</p>${this.renderWeightControlTaskInputs(todayLog)}<div class="field"><label class="label is-small" for="wcCalories">Est. Calories:</label><div class="control"><input class="input is-small" type="number" id="wcCalories" placeholder="1800" value="${todayLog.caloriesTracked || ''}"></div></div><p class="task-display">Daily calorie goal (approx): ${this.calculateDailyCalorieGoal()} kcal</p>`; } content += `</div>`; this.addCardToDashboard('weight-control-task', content); document.getElementById('wcMealTimes')?.addEventListener('input', (e) => this.updateWeightLog('mealtimes', e.target.value)); document.getElementById('wcWater')?.addEventListener('input', (e) => this.updateWeightLog('water', e.target.value)); document.getElementById('wcFood')?.addEventListener('input', (e) => this.updateWeightLog('food', e.target.value)); document.getElementById('wcNonWaterDrinks')?.addEventListener('input', (e) => this.updateWeightLog('nonWaterDrinks', e.target.value)); document.getElementById('wcJunkFood')?.addEventListener('change', (e) => this.updateWeightLog('junkFoodStopped', e.target.checked, 2)); document.getElementById('wcFruitSnacks')?.addEventListener('change', (e) => this.updateWeightLog('fruitSnacks', e.target.checked, 2)); document.getElementById('wcMealTimesAdhered')?.addEventListener('change', (e) => this.updateWeightLog('mealTimesAdhered', e.target.checked, 2)); document.getElementById('wcCalories')?.addEventListener('input', (e) => this.updateWeightLog('caloriesTracked', e.target.value, 5)); this.updateTaskCheckboxState('weightControl'); },
         renderWeightControlTaskInputs(todayLog) { return `<div class="field"><label class="label is-small" for="wcMealTimes">Mealtimes:</label><div class="control"><input class="input is-small" type="text" id="wcMealTimes" value="${todayLog.mealtimes || ''}"></div></div> <div class="field"><label class="label is-small" for="wcWater">Water (L):</label><div class="control"><input class="input is-small" type="number" step="0.1" id="wcWater" value="${todayLog.water || ''}"></div></div> <div class="field"><label class="label is-small" for="wcFood">Food Log:</label><div class="control"><textarea class="textarea is-small" id="wcFood" rows="2">${todayLog.food || ''}</textarea></div></div> <div class="field"><label class="label is-small" for="wcNonWaterDrinks">Non-water drinks:</label><div class="control"><input class="input is-small" type="text" id="wcNonWaterDrinks" value="${todayLog.nonWaterDrinks || ''}"></div></div>`; },
         calculateDailyCalorieGoal() { return (this.state.userData.gender === 'female' ? 1800 : 2200) - (this.state.userData.caloricDeficitTarget || 500); },
-        updateWeightLog(field, value, points = 1) { const todayLog = this.getTodayLog().weightControl; todayLog[field] = value; if (value === true || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && !isNaN(value))) { this.addPoints(points, `Weight Control: ${field}`); } this.saveData(); this.checkTaskCompletion('weightControl', this.isWeightControlTaskSubstantiallyFilled()); },
+        updateWeightLog(field, value, points = 1) { const todayLog = this.getTodayLog(true).weightControl; todayLog[field] = value; if (value === true || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && !isNaN(value))) { this.addPoints(points, `Weight Control: ${field}`); } this.saveData(); this.checkTaskCompletion('weightControl', this.isWeightControlTaskSubstantiallyFilled()); },
         isWeightControlTaskSubstantiallyFilled() { const W = this.state.currentChallengeWeek; const log = this.getTodayLog()?.weightControl; if(!log) return false; if (W === 1) return !!(log.mealtimes && log.water && log.food); if (W === 2) return !!(log.mealtimes && log.water && log.food && log.junkFoodStopped && log.fruitSnacks && log.mealTimesAdhered); return !!(log.mealtimes && log.water && log.food && log.caloriesTracked); },
-        renderExerciseTask() { const W = this.state.currentChallengeWeek; const todayLogFull = this.getTodayLog(true); const track = this.state.userData.exerciseTrack; let routine = this.getExerciseRoutine(W, track, this.state.userData.gender, this.state.userData.age); const isTaskCompleted = todayLogFull.tasksCompleted?.exercise || todayLogFull.exerciseCompleted || false; let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="exerciseTaskDone" data-task="exercise" ${isTaskCompleted ? 'checked' : ''}>Exercise</label></p></div> <div class="card-content content"> <p class="is-size-7">Track: <span class="tag is-info is-light">${track.charAt(0).toUpperCase() + track.slice(1)}</span></p> <p class="is-size-6 has-text-weight-semibold">Cardio:</p> <p class="is-size-7">${routine.cardio}</p> <p class="is-size-6 has-text-weight-semibold">Strength:</p> <p class="is-size-7">${routine.strength}</p> <div class="task-item mt-3"><label class="checkbox"><input type="checkbox" id="exerciseCompletedCheck" ${isTaskCompleted ? 'checked' : ''}> Mark as completed</label></div> </div>`; this.addCardToDashboard('exercise-task', content); document.getElementById('exerciseCompletedCheck')?.addEventListener('change', (e) => { todayLogFull.exerciseCompleted = e.target.checked; if(e.target.checked) this.addPoints(10, "Exercise Completed"); this.saveData(); this.checkTaskCompletion('exercise', e.target.checked); }); this.updateTaskCheckboxState('exercise'); },
+        renderExerciseTask() { const W = this.state.currentChallengeWeek; const todayLogFull = this.getTodayLog(true); const track = this.state.userData.exerciseTrack; let routine = this.getExerciseRoutine(W, track, this.state.userData.gender, this.state.userData.age); const isTaskCompleted = todayLogFull.tasksCompleted?.exercise?.completed || todayLogFull.exerciseCompleted || false; let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="exerciseTaskDone" data-task="exercise" ${isTaskCompleted ? 'checked' : ''}>Exercise</label></p></div> <div class="card-content content"> <p class="is-size-7">Track: <span class="tag is-info is-light">${track.charAt(0).toUpperCase() + track.slice(1)}</span></p> <p class="is-size-6 has-text-weight-semibold">Cardio:</p> <p class="is-size-7">${routine.cardio}</p> <p class="is-size-6 has-text-weight-semibold">Strength:</p> <p class="is-size-7">${routine.strength}</p> <div class="task-item mt-3"><label class="checkbox"><input type="checkbox" id="exerciseCompletedCheck" ${isTaskCompleted ? 'checked' : ''}> Mark as completed</label></div> </div>`; this.addCardToDashboard('exercise-task', content); document.getElementById('exerciseCompletedCheck')?.addEventListener('change', (e) => { todayLogFull.exerciseCompleted = e.target.checked; if(e.target.checked) this.addPoints(10, "Exercise Completed"); this.saveData(); this.checkTaskCompletion('exercise', e.target.checked); }); this.updateTaskCheckboxState('exercise'); },
         getExerciseRoutine(week, track, gender, age) { let baseCardioMins = 15; let baseStrengthSets = "2 sets of 10-12 reps (e.g., bodyweight squats, push-ups variation, planks)"; let trackMultiplier = 1.0; if (track === 'intermediate') trackMultiplier = 1.2; if (track === 'advanced') trackMultiplier = 1.5; let cardioMins = Math.round(baseCardioMins * trackMultiplier + (week - 1) * 2 * trackMultiplier); cardioMins = Math.min(cardioMins, 60); let strengthDesc = baseStrengthSets; if (week > 3) strengthDesc = strengthDesc.replace("2 sets", "3 sets"); if (week > 6) strengthDesc = strengthDesc.replace("10-12 reps", "12-15 reps or harder variations"); return { cardio: `${cardioMins} mins moderate intensity (brisk walk, jog, cycle).`, strength: strengthDesc }; },
         renderPeaceOfMindTask() { const W = this.state.currentChallengeWeek; const todayLogFull = this.getTodayLog(true); const todayLogPOM = todayLogFull.peaceOfMind; const isTaskCompleted = this.isPeaceOfMindTaskSubstantiallyFilled(); let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="peaceOfMindTaskDone" data-task="peaceOfMind" ${isTaskCompleted ? 'checked':''}>Peace of Mind</label></p></div> <div class="card-content content">`; content += `<div class="task-item"><label class="checkbox"><input type="checkbox" id="pomMindfulness" ${todayLogPOM.mindfulnessCompleted ? 'checked' : ''}> 1-min Mindfulness.</label><button class="button is-small is-outlined is-primary ml-2" id="startMindfulnessTimerBtn">Timer</button><span id="mindfulnessTimerDisplay" class="is-size-7 ml-1"></span></div>`; content += `<div class="mt-2"><label class="label is-small mb-0">Mood (1-10):</label> Before: <input type="number" min="1" max="10" id="pomMoodBefore" class="input is-small small-input" value="${todayLogPOM.moodBefore || ''}"> After: <input type="number" min="1" max="10" id="pomMoodAfter" class="input is-small small-input" value="${todayLogPOM.moodAfter || ''}"></div>`; content += `<div class="mt-1"><label class="label is-small mb-0">Stress (1-10):</label> Before: <input type="number" min="1" max="10" id="pomStressBefore" class="input is-small small-input" value="${todayLogPOM.stressBefore || ''}"> After: <input type="number" min="1" max="10" id="pomStressAfter" class="input is-small small-input" value="${todayLogPOM.stressAfter || ''}"></div>`; content += `<div class="task-item mt-2"><label class="checkbox"><input type="checkbox" id="pomBreathing" ${todayLogPOM.breathingCompleted ? 'checked' : ''}> Breathing exercises.</label> <button class="button is-small is-outlined is-info ml-2" data-education="breathing">Info</button></div>`; content += `<div class="task-item mt-2">Talk about stress triggers.<button class="button is-small is-outlined is-link ml-2" id="openLlmChatBtn">Chat</button></div>`; content += `<div class="task-item mt-2"><label class="checkbox"><input type="checkbox" id="pomEnjoyableActivity" ${todayLogPOM.enjoyableActivityCompleted ? 'checked' : ''}> 30 mins enjoyable activity.</label></div>`; if (W >= 2) { const gratitudeLog = this.state.userData.peaceOfMind.gratitudeLog; const gratitudeKey = `week${W}`; content += `<hr><p class="has-text-weight-semibold is-size-7">Weekly Gratitude:</p><textarea id="pomGratitude" class="textarea is-small" rows="2" placeholder="One thing grateful for...">${gratitudeLog[gratitudeKey] || ''}</textarea>`; } content += `</div>`; this.addCardToDashboard('peace-of-mind-task', content); document.getElementById('startMindfulnessTimerBtn')?.addEventListener('click', () => this.startMindfulnessTimer()); document.getElementById('pomMindfulness')?.addEventListener('change', (e) => this.updatePeaceOfMindLog('mindfulnessCompleted', e.target.checked, 2)); document.getElementById('pomMoodBefore')?.addEventListener('input', (e) => this.updatePeaceOfMindLog('moodBefore', e.target.value)); document.getElementById('pomMoodAfter')?.addEventListener('input', (e) => this.updatePeaceOfMindLog('moodAfter', e.target.value)); document.getElementById('pomStressBefore')?.addEventListener('input', (e) => this.updatePeaceOfMindLog('stressBefore', e.target.value)); document.getElementById('pomStressAfter')?.addEventListener('input', (e) => this.updatePeaceOfMindLog('stressAfter', e.target.value)); document.getElementById('pomBreathing')?.addEventListener('change', (e) => this.updatePeaceOfMindLog('breathingCompleted', e.target.checked, 2)); document.getElementById('openLlmChatBtn')?.addEventListener('click', () => this.showModal('llmChatModal')); document.getElementById('pomEnjoyableActivity')?.addEventListener('change', (e) => this.updatePeaceOfMindLog('enjoyableActivityCompleted', e.target.checked, 3)); if (document.getElementById('pomGratitude')) { document.getElementById('pomGratitude').addEventListener('input', (e) => this.updateGratitudeLog(e.target.value)); } document.querySelector('button[data-education="breathing"]')?.addEventListener('click', () => { this.showEducationModal( "Breathing Exercise: Box Breathing", "Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s. Repeat for 2-5 minutes. This calms the nervous system." ); }); this.updateTaskCheckboxState('peaceOfMind'); },
         startMindfulnessTimer() { let timeLeft = 60; const timerDisplay = document.getElementById('mindfulnessTimerDisplay'); const mindfulnessCheckbox = document.getElementById('pomMindfulness'); if (!timerDisplay || !mindfulnessCheckbox) return; timerDisplay.textContent = ` ${timeLeft}s`; const interval = setInterval(() => { timeLeft--; timerDisplay.textContent = ` ${timeLeft}s`; if (timeLeft <= 0) { clearInterval(interval); timerDisplay.textContent = " Done!"; mindfulnessCheckbox.checked = true; this.updatePeaceOfMindLog('mindfulnessCompleted', true, 2); this.sendNotification("Mindfulness Complete!", "Great job on your 1-minute mindfulness."); } }, 1000); },
-        updatePeaceOfMindLog(field, value, points = 1) { const todayLogPOM = this.getTodayLog().peaceOfMind; todayLogPOM[field] = value; if(value === true || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && !isNaN(value))) { if (field.endsWith('Completed') && value === true) this.addPoints(points, `Peace of Mind: ${field}`); else if (!field.endsWith('Completed')) this.addPoints(0.5, `Peace of Mind: ${field} logged`); } this.saveData(); this.checkTaskCompletion('peaceOfMind', this.isPeaceOfMindTaskSubstantiallyFilled()); },
+        updatePeaceOfMindLog(field, value, points = 1) { const todayLogPOM = this.getTodayLog(true).peaceOfMind; todayLogPOM[field] = value; if(value === true || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && !isNaN(value))) { if (field.endsWith('Completed') && value === true) this.addPoints(points, `Peace of Mind: ${field}`); else if (!field.endsWith('Completed')) this.addPoints(0.5, `Peace of Mind: ${field} logged`); } this.saveData(); this.checkTaskCompletion('peaceOfMind', this.isPeaceOfMindTaskSubstantiallyFilled()); },
         updateGratitudeLog(value) { const gratitudeLog = this.state.userData.peaceOfMind.gratitudeLog; const gratitudeKey = `week${this.state.currentChallengeWeek}`; if (!gratitudeLog[gratitudeKey] && value.trim().length > 0) { this.addPoints(5, "Weekly Gratitude Logged"); } gratitudeLog[gratitudeKey] = value; this.saveData(); },
         isPeaceOfMindTaskSubstantiallyFilled() { const log = this.getTodayLog()?.peaceOfMind; if (!log) return false; return !!(log.mindfulnessCompleted && log.breathingCompleted && log.enjoyableActivityCompleted && log.moodBefore && log.stressBefore && log.moodAfter && log.stressAfter); },
         renderMakeMeQuitTask() { const W = this.state.currentChallengeWeek; const mmqData = this.state.userData.makeMeQuit; const todayLogFull = this.getTodayLog(true); const todayLogMMQ = todayLogFull.makeMeQuit; const isTaskCompleted = this.isMakeMeQuitTaskSubstantiallyFilled(); let content = `<div class="card-header"><p class="card-header-title"><label class="checkbox mr-2"><input type="checkbox" id="makeMeQuitTaskDone" data-task="makeMeQuit" ${isTaskCompleted ? 'checked':''}>Make Me Quit</label></p></div> <div class="card-content content">`; if (!mmqData.behavior && W >= 1) { content += `<p class="is-size-7">Identify one unhealthy behavior to change.</p><div class="field"><label class="label is-small" for="mmqBehaviorInput">Behavior to Quit:</label><div class="control"><input class="input is-small" type="text" id="mmqBehaviorInput" placeholder="e.g., mindless snacking after 8pm"></div></div>`; } else { content += `<p class="is-size-7">Focus: Modifying "<strong>${mmqData.behavior || 'Not Set'}</strong>"</p>`; } if (mmqData.behavior) { if (W === 1) { content += `<p class="is-size-7"><strong>W1 (Awareness):</strong> Track instances and context.</p>${this.renderMMQWeek1InputsBulma(todayLogMMQ)}`; } else if (W === 2) { if (!mmqData.trigger) { content += `<p class="is-size-7"><strong>W2 (Identify Trigger):</strong> Based on last week, identify a trigger.</p><div class="field"><label class="label is-small" for="mmqTriggerInput">Identify Trigger:</label><div class="control"><input class="input is-small" type="text" id="mmqTriggerInput" placeholder="e.g., opening fridge when bored"></div></div>`; } else { content += `<p class="is-size-7">Trigger: "<strong>${mmqData.trigger}</strong>". Continue logging.</p>${this.renderMMQWeek1InputsBulma(todayLogMMQ)}`; } } else if (W === 3) { if (!mmqData.trigger) content += `<p class="is-size-7">Please identify trigger first (W2 task).</p>`; else content += `<p class="is-size-7"><strong>W3 (Limit Exposure):</strong> Limit exposure to "<strong>${mmqData.trigger}</strong>".</p><div class="task-item"><label class="checkbox"><input type="checkbox" id="mmqTriggerAvoided" ${todayLogMMQ.triggerAvoided ? 'checked' : ''}> I worked on limiting trigger exposure.</label></div>${this.renderMMQWeek1InputsBulma(todayLogMMQ)}`; } else { if (!mmqData.trigger) content += `<p class="is-size-7">Identify trigger first (W2 task).</p>`; else if (!mmqData.substitution) { content += `<p class="is-size-7"><strong>W4+ (Substitution):</strong> Plan substitution for "${mmqData.trigger}".</p><div class="field"><label class="label is-small" for="mmqSubstitutionInput">Substitution Behavior:</label><div class="control"><input class="input is-small" type="text" id="mmqSubstitutionInput" placeholder="e.g., drink water, 5 squats"></div></div>${this.renderMMQWeek1InputsBulma(todayLogMMQ)}`; } else { content += `<p class="is-size-7"><strong>W4-10 (Practice):</strong> Practice "<strong>${mmqData.substitution}</strong>" for "<strong>${mmqData.trigger}</strong>".</p><div class="task-item"><label class="checkbox"><input type="checkbox" id="mmqSubstitutionPracticed" ${todayLogMMQ.substitutionPracticed ? 'checked' : ''}> I practiced my substitution.</label></div>${this.renderMMQWeek1InputsBulma(todayLogMMQ)}`; } } } content += `</div>`; this.addCardToDashboard('make-me-quit-task', content); document.getElementById('mmqBehaviorInput')?.addEventListener('change', (e) => this.updateMMQData('behavior', e.target.value)); document.getElementById('mmqInstances')?.addEventListener('input', (e) => this.updateMMQLog('instancesLogged', parseInt(e.target.value) || 0)); document.getElementById('mmqContext')?.addEventListener('input', (e) => this.updateMMQLog('contextLogged', e.target.value)); document.getElementById('mmqTriggerInput')?.addEventListener('change', (e) => this.updateMMQData('trigger', e.target.value, 5)); document.getElementById('mmqTriggerAvoided')?.addEventListener('change', (e) => this.updateMMQLog('triggerAvoided', e.target.checked, 3)); document.getElementById('mmqSubstitutionInput')?.addEventListener('change', (e) => this.updateMMQData('substitution', e.target.value, 5)); document.getElementById('mmqSubstitutionPracticed')?.addEventListener('change', (e) => this.updateMMQLog('substitutionPracticed', e.target.checked, 3)); this.updateTaskCheckboxState('makeMeQuit'); },
         renderMMQWeek1InputsBulma(todayLogMMQ) { return `<div class="field mt-2"><label class="label is-small" for="mmqInstances">Times today:</label><div class="control"><input class="input is-small" type="number" id="mmqInstances" min="0" value="${todayLogMMQ.instancesLogged !== null ? todayLogMMQ.instancesLogged : ''}"></div></div> <div class="field"><label class="label is-small" for="mmqContext">Context/Notes:</label><div class="control"><textarea class="textarea is-small" id="mmqContext" rows="2">${todayLogMMQ.contextLogged || ''}</textarea></div></div>`; },
         updateMMQData(field, value, points = 0) { this.state.userData.makeMeQuit[field] = value; if (value.trim().length > 0 && points > 0) this.addPoints(points, `MakeMeQuit: ${field} set`); this.saveData(); this.renderDashboard(); },
-        updateMMQLog(field, value, points = 1) { const todayLogMMQ = this.getTodayLog().makeMeQuit; todayLogMMQ[field] = value; if ((value === true) || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && value >=0)) { if (field.endsWith('Practiced') && value === true) this.addPoints(points, `MakeMeQuit: ${field}`); else if (field.endsWith('Avoided') && value === true) this.addPoints(points, `MakeMeQuit: ${field}`); else if (field.includes('Logged')) this.addPoints(points, `MakeMeQuit: Logged`); } this.saveData(); this.checkTaskCompletion('makeMeQuit', this.isMakeMeQuitTaskSubstantiallyFilled()); },
+        updateMMQLog(field, value, points = 1) { const todayLogMMQ = this.getTodayLog(true).makeMeQuit; todayLogMMQ[field] = value; if ((value === true) || (typeof value === 'string' && value.length > 0) || (typeof value === 'number' && value >=0)) { if (field.endsWith('Practiced') && value === true) this.addPoints(points, `MakeMeQuit: ${field}`); else if (field.endsWith('Avoided') && value === true) this.addPoints(points, `MakeMeQuit: ${field}`); else if (field.includes('Logged')) this.addPoints(points, `MakeMeQuit: Logged`); } this.saveData(); this.checkTaskCompletion('makeMeQuit', this.isMakeMeQuitTaskSubstantiallyFilled()); },
         isMakeMeQuitTaskSubstantiallyFilled() { const W = this.state.currentChallengeWeek; const log = this.getTodayLog()?.makeMeQuit; const data = this.state.userData.makeMeQuit; if (!log || !data) return false; if (!data.behavior) return false; if (W === 1) return typeof log.instancesLogged === 'number' && log.contextLogged !== undefined; if (W === 2) return data.trigger && typeof log.instancesLogged === 'number'; if (W === 3) return data.trigger && log.triggerAvoided; if (W >= 4) return data.trigger && data.substitution && log.substitutionPracticed; return false; },
-        checkDayCompletionStatus() { const todayLog = this.getTodayLog(); if (!this.elements.completeDayBtn || !this.elements.dailyCompletionMessage) return; if (!todayLog || !todayLog.tasksCompleted) { this.elements.completeDayBtn.disabled = true; return; } const allTasks = ['sleep', 'weightControl', 'exercise', 'peaceOfMind', 'makeMeQuit']; const completedTasksCount = allTasks.filter(task => todayLog.tasksCompleted[task]).length; const allTasksCompleted = completedTasksCount === allTasks.length; this.elements.completeDayBtn.disabled = !allTasksCompleted || this.state.isDayCompleted; this.elements.completeDayBtn.textContent = this.state.isDayCompleted ? "Day Already Completed" : (allTasksCompleted ? "Mark Day as Complete" : `Complete ${allTasks.length - completedTasksCount} more tasks`); if (this.state.isDayCompleted) { this.elements.dailyCompletionMessage.textContent = "Great job! You've completed all tasks for today."; this.elements.dailyCompletionMessage.className = 'notification is-success mt-3'; this.elements.dailyCompletionMessage.classList.remove('is-hidden'); } else { this.elements.dailyCompletionMessage.classList.add('is-hidden'); } },
-        handleCompleteDay() { if (this.state.isDayCompleted) return; this.state.isDayCompleted = true; const todayLog = this.getTodayLog(); todayLog.dayCompleted = true; this.addPoints(25, "All Daily Tasks Completed!"); this.sendNotification("Day Complete!", "Awesome work, you've completed all tasks for today!"); this.showInAppNotification("Day marked as complete! Fantastic effort!", "is-success"); this.saveData(); this.checkDayCompletionStatus(); if (this.isWeekComplete()) this.handleWeekCompletion(); },
+        handleCompleteDay() { if (this.state.isDayCompleted) return; this.state.isDayCompleted = true; const todayLog = this.getTodayLog(true); todayLog.dayCompleted = true; this.addPoints(25, "All Daily Tasks Completed!"); this.sendNotification("Day Complete!", "Awesome work, you've completed all tasks for today!"); this.showInAppNotification("Day marked as complete! Fantastic effort!", "is-success"); this.saveData(); this.checkDayCompletionStatus(); if (this.isWeekComplete()) this.handleWeekCompletion(); },
         isWeekComplete() { const W = this.state.currentChallengeWeek; const startDate = new Date(this.state.userData.startDate); let daysCompletedThisWeek = 0; for (let i = 0; i < 7; i++) { const dayToCheck = new Date(startDate); dayToCheck.setDate(startDate.getDate() + (W - 1) * 7 + i); const dayKey = dayToCheck.toISOString().split('T')[0]; if (this.state.userData.dailyLogs[dayKey] && this.state.userData.dailyLogs[dayKey].dayCompleted) { daysCompletedThisWeek++; } } return daysCompletedThisWeek >= 5; },
         handleWeekCompletion() { const W = this.state.currentChallengeWeek; const badgeName = `Week ${W} Warrior`; if (!this.state.userData.badges.includes(badgeName)) { this.state.userData.badges.push(badgeName); this.addPoints(100, `Completed Week ${W}`); this.showInAppNotification(`Congrats! You've earned the "${badgeName}" badge!`, "is-success", 10000); this.sendNotification("Week Complete!", `You've conquered Week ${W}! Keep it up!`); } this.saveData(); },
         addPoints(amount, reason) { this.state.userData.points = (this.state.userData.points || 0) + amount; console.log(`+${amount} points for: ${reason}`); this.updateUserDisplay(); },

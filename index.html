@@ -13,15 +13,15 @@
     <link rel="icon" href="icons/icon-32x32.png" type="image/png">
 </head>
 <body>
-    <section class="section py-4">
+    <section class="section py-4 app-wrapper">
         <div class="container">
             <nav class="navbar is-primary mb-4" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
-                    <a class="navbar-item" href="#">
+                    <a class="navbar-item" href="#" id="homeButton">
                         <h1 class="title is-4 has-text-white">Body & Soul</h1>
                     </a>
                 </div>
-                <div class="navbar-menu is-active"> <!-- Kept is-active for simplicity -->
+                <div id="navbarMenu" class="navbar-menu is-active"> <!-- Kept is-active -->
                     <div class="navbar-end">
                         <div class="navbar-item">
                             <div class="has-text-white has-text-right">
@@ -72,21 +72,22 @@
                 <!-- Screen: Main Dashboard -->
                 <section id="dashboardScreen" class="is-hidden">
                     <div class="level"><div class="level-left"><div class="level-item"><h2 id="dashboardTitle" class="title is-3">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2></div></div><div class="level-right"><div class="level-item"><div><p class="heading">Challenge Progress</p><progress id="challengeProgress" class="progress is-success" value="0" max="100"></progress></div></div></div></div>
-                    <div id="dailyTasksContainer" class="columns is-multiline is-variable is-2"></div>
+                    <!-- Added is-justify-content-center for centering columns when they don't fill the row -->
+                    <div id="dailyTasksContainer" class="columns is-multiline is-variable is-2 is-justify-content-center">
+                        <!-- Task cards will be dynamically populated here by JS -->
+                    </div>
                     <div class="buttons is-centered mt-5"><button id="motivateMeBtn" class="button is-warning is-medium">Motivate Me Now!</button><button id="completeDayBtn" class="button is-primary is-medium">Mark Day as Complete</button></div>
                     <div id="dailyCompletionMessage" class="notification is-hidden mt-3"></div>
                 </section>
 
-                <!-- Modals -->
+                <!-- Modals (No change to their internal structure from Bulma integration) -->
                 <div id="motivateModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Need a Boost?</p><button class="delete" aria-label="close" data-target-modal="motivateModal"></button></header><section class="modal-card-body"><p>Which area are you feeling unmotivated about?</p><div class="field"><div class="control"><div class="select is-fullwidth"><select id="motivationAreaSelect"><option value="sleep">Sleep</option><option value="weightControl">Weight Control</option><option value="exercise">Exercise</option><option value="peaceOfMind">Peace of Mind</option><option value="makeMeQuit">Make Me Quit</option></select></div></div></div><div id="motivationMessage" class="content mt-3 p-2 has-background-light" style="min-height: 50px;"></div></section><footer class="modal-card-foot is-justify-content-flex-end"><button id="getMotivationBtn" class="button is-primary">Get Motivation</button><button class="button closeModalBtn" data-target-modal="motivateModal">Cancel</button></footer></div></div>
                 <div id="llmChatModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Talk About Stress Triggers</p><button class="delete" aria-label="close" data-target-modal="llmChatModal"></button></header><section class="modal-card-body"><p>Describe what's on your mind. (This is a simulated chat)</p><div class="field"><div class="control"><textarea id="llmChatInput" class="textarea" rows="4" placeholder="Type here..."></textarea></div></div><div id="llmChatResponse" class="content mt-3 p-2 has-background-light" style="min-height: 100px; max-height: 200px; overflow-y: auto;"></div></section><footer class="modal-card-foot is-justify-content-flex-end"><button id="sendToLlmBtn" class="button is-primary">Send</button><button class="button closeModalBtn" data-target-modal="llmChatModal">Close</button></footer></div></div>
                 <div id="educationModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p id="educationTitle" class="modal-card-title">Education</p><button class="delete" aria-label="close" data-target-modal="educationModal"></button></header><section class="modal-card-body content"><p id="educationText"></p></section><footer class="modal-card-foot is-justify-content-flex-end"><button class="button closeModalBtn" data-target-modal="educationModal">Close</button></footer></div></div>
-                <!-- NO CALENDAR MODAL IN THIS VERSION -->
+                <!-- NO Calendar Modal, NO Settings Screen in this version -->
             </main>
         </div>
     </section>
-
-    <!-- NO FAB IN THIS VERSION -->
 
     <div id="inAppNotification" class="notification is-hidden is-fixed-bottom-custom p-3 m-3">
         <button id="dismissNotificationBtn" class="delete"></button>
