@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="has-background-light"> <!-- Class for dark mode toggling -->
+<html lang="en" class="dark-mode"> <!-- DARK MODE DEFAULT: Added 'dark-mode' class here -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- 'black-translucent' for dark mode might look good -->
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="icon" href="icons/icon-32x32.png" type="image/png">
 </head>
@@ -21,8 +21,7 @@
                         <h1 class="title is-4 has-text-white">Body & Soul</h1>
                     </a>
                 </div>
-                <!-- ADDED is-active HERE -->
-                <div id="navbarMenu" class="navbar-menu is-active">
+                <div id="navbarMenu" class="navbar-menu is-active"> <!-- Keep is-active for simplicity on mobile -->
                     <div class="navbar-end">
                         <div class="navbar-item">
                             <div class="has-text-white has-text-right">
@@ -30,11 +29,7 @@
                                 <p class="is-size-7"><strong id="userPointsDisplay">0</strong> Points</p>
                             </div>
                         </div>
-                        <a class="navbar-item" id="settingsGearIcon" title="Settings">
-                            <span class="icon is-medium has-text-white">
-                                ⚙ <!-- GEAR ICON (Unicode) -->
-                            </span>
-                        </a>
+                        <!-- Settings Gear Icon REMOVED from here -->
                     </div>
                 </div>
             </nav>
@@ -117,8 +112,11 @@
                                 <span class="slider round"></span>
                             </label>
                         </div>
+                        <p class="help">Toggle to switch between light and dark themes.</p>
                     </div>
                     <hr>
+                    <!-- Consider adding more settings here in the future -->
+                    <!-- e.g., Reset Progress, Export Data (simulated) -->
                     <button id="backToDashboardBtn" class="button is-link">Back to Dashboard</button>
                 </section>
 
@@ -131,10 +129,18 @@
         </div>
     </section>
 
-    <div class="fab-container is-hidden"> <!-- Start FAB hidden, show on dashboard -->
-        <button class="fab-main button is-primary is-rounded" id="fabMainBtn"><span class="icon">✚</span></button>
+    <!-- Floating Action Button Menu -->
+    <div class="fab-container is-hidden"> <!-- Start FAB hidden, JS will show on dashboard -->
+        <button class="fab-main button is-primary is-rounded" id="fabMainBtn">
+            <span class="icon">✚</span>
+        </button>
         <div class="fab-options">
-            <button class="fab-option button is-link is-rounded" id="fabCalendarBtn" title="View Calendar"><span class="icon"></span></button>
+            <button class="fab-option button is-link is-rounded" id="fabCalendarBtn" title="View Calendar">
+                <span class="icon"></span> <!-- CALENDAR ICON -->
+            </button>
+            <button class="fab-option button is-info is-rounded" id="fabSettingsBtn" title="Settings">
+                <span class="icon">⚙</span> <!-- GEAR ICON -->
+            </button>
         </div>
     </div>
 
