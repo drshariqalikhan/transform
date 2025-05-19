@@ -1,168 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="has-background-light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Body & Soul</title>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <!-- Link to your custom styles (if any, keep this minimal) -->
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 
     <!-- iOS PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png"> <!-- Create a 180x180px icon -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- 'default' or 'black' or 'black-translucent' -->
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 
-    <!-- Favicon (optional but good practice) -->
     <link rel="icon" href="icons/icon-32x32.png" type="image/png">
 </head>
 <body>
-    <div class="app-container">
-        <header class="app-header">
-            <h1>Body & Soul</h1>
-            <div class="user-info">
-                <span id="userNameDisplay"></span>
-                <span id="userPointsDisplay"></span>
-            </div>
-        </header>
+    <section class="section py-4">
+        <div class="container">
+            <nav class="navbar is-primary mb-4" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="#">
+                        <h1 class="title is-4 has-text-white">Body & Soul</h1>
+                    </a>
+                </div>
+                <div class="navbar-menu">
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <div class="has-text-white has-text-right">
+                                <p id="userNameDisplay" class="is-size-6"></p>
+                                <p class="is-size-7"><strong id="userPointsDisplay">0</strong> Points</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-        <main id="appContent">
-            <!-- Screen: Welcome -->
-            <section id="welcomeScreen" class="screen">
-                <h2>Welcome to Your Wellness Journey!</h2>
-                <p>Embark on a 10-week challenge to transform your body and mind.</p>
-                <button id="startChallengeBtn" class="btn btn-primary">Start the Challenge</button>
-                <button id="continueChallengeBtn" class="btn btn-secondary hidden">Continue Challenge</button>
-            </section>
+            <main id="appContent">
+                <!-- Screen: Welcome -->
+                <section id="welcomeScreen" class="content box">
+                    <h2 class="title is-3 has-text-primary">Welcome to Your Wellness Journey!</h2>
+                    <p>Embark on a 10-week challenge to transform your body and mind.</p>
+                    <div class="buttons">
+                        <button id="startChallengeBtn" class="button is-primary is-medium">Start the Challenge</button>
+                        <button id="continueChallengeBtn" class="button is-link is-medium is-hidden">Continue Challenge</button>
+                    </div>
+                </section>
 
-            <!-- Screen: Registration -->
-            <section id="registrationScreen" class="screen hidden">
-                <h2>Let's Get Started</h2>
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label for="name">Name:</label>
-                        <input type="text" id="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="age">Age:</label>
-                        <input type="number" id="age" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender:</label>
-                        <select id="gender" required>
-                            <option value="">Select...</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="weight">Weight (kg):</label>
-                        <input type="number" id="weight" step="0.1" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="height">Height (cm):</label>
-                        <input type="number" id="height" min="1" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save & Next</button>
-                </form>
-            </section>
+                <!-- Screen: Registration -->
+                <section id="registrationScreen" class="content box is-hidden">
+                    <h2 class="title is-3 has-text-primary">Let's Get Started</h2>
+                    <form id="registrationForm">
+                        <div class="field">
+                            <label class="label" for="name">Name:</label>
+                            <div class="control">
+                                <input class="input" type="text" id="name" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="age">Age:</label>
+                            <div class="control">
+                                <input class="input" type="number" id="age" min="1" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="gender">Gender:</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select id="gender" required>
+                                        <option value="">Select...</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="weight">Weight (kg):</label>
+                            <div class="control">
+                                <input class="input" type="number" id="weight" step="0.1" min="1" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="height">Height (cm):</label>
+                            <div class="control">
+                                <input class="input" type="number" id="height" min="1" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" class="button is-primary is-fullwidth">Save & Next</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
 
-            <!-- Screen: Baseline Questionnaire -->
-            <section id="baselineScreen" class="screen hidden">
-                <h2>Baseline Assessment</h2>
-                <p>Let's record your starting point.</p>
-                <form id="baselineForm">
-                    <div class="form-group">
-                        <label for="cardioCapacity">Cardio Capacity (e.g., minutes run/walk, distance):</label>
-                        <input type="text" id="cardioCapacity" placeholder="e.g., 5 min run" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="strengthReps">Strength Reps (e.g., push-ups, squats):</label>
-                        <input type="text" id="strengthReps" placeholder="e.g., 10 push-ups" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="exerciseTrack">Choose Your Exercise Track:</label>
-                        <select id="exerciseTrack" required>
-                            <option value="beginner">Beginner</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Start Week 1</button>
-                </form>
-            </section>
+                <!-- Screen: Baseline Questionnaire -->
+                <section id="baselineScreen" class="content box is-hidden">
+                    <h2 class="title is-3 has-text-primary">Baseline Assessment</h2>
+                    <p>Let's record your starting point.</p>
+                    <form id="baselineForm">
+                        <div class="field">
+                            <label class="label" for="cardioCapacity">Cardio Capacity (e.g., minutes run/walk, distance):</label>
+                            <div class="control">
+                                <input class="input" type="text" id="cardioCapacity" placeholder="e.g., 5 min run" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="strengthReps">Strength Reps (e.g., push-ups, squats):</label>
+                            <div class="control">
+                                <input class="input" type="text" id="strengthReps" placeholder="e.g., 10 push-ups" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" for="exerciseTrack">Choose Your Exercise Track:</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select id="exerciseTrack" required>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" class="button is-primary is-fullwidth">Start Week 1</button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
 
-            <!-- Screen: Main Dashboard -->
-            <section id="dashboardScreen" class="screen hidden">
-                <div class="dashboard-header">
-                    <h2 id="dashboardTitle">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2>
-                    <div class="progress-container">
-                        <span>Challenge Progress:</span>
-                        <progress id="challengeProgress" value="0" max="100"></progress>
+                <!-- Screen: Main Dashboard -->
+                <section id="dashboardScreen" class="is-hidden">
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <h2 id="dashboardTitle" class="title is-3">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <div>
+                                    <p class="heading">Challenge Progress</p>
+                                    <progress id="challengeProgress" class="progress is-success" value="0" max="100"></progress>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dailyTasksContainer" class="columns is-multiline is-variable is-2">
+                        <!-- Task cards will be dynamically populated here by JS -->
+                    </div>
+
+                    <div class="buttons is-centered mt-5">
+                        <button id="motivateMeBtn" class="button is-warning is-medium">Motivate Me Now!</button>
+                        <button id="completeDayBtn" class="button is-primary is-medium">Mark Day as Complete</button>
+                    </div>
+                    <div id="dailyCompletionMessage" class="notification is-hidden mt-3"></div>
+                </section>
+
+                <!-- Modal for Motivate Me Now -->
+                <div id="motivateModal" class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Need a Boost?</p>
+                            <button class="delete" aria-label="close" data-target-modal="motivateModal"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <p>Which area are you feeling unmotivated about?</p>
+                            <div class="field">
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select id="motivationAreaSelect">
+                                            <option value="sleep">Sleep</option>
+                                            <option value="weightControl">Weight Control</option>
+                                            <option value="exercise">Exercise</option>
+                                            <option value="peaceOfMind">Peace of Mind</option>
+                                            <option value="makeMeQuit">Make Me Quit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="motivationMessage" class="content mt-3 p-2 has-background-light" style="min-height: 50px;"></div>
+                        </section>
+                        <footer class="modal-card-foot is-justify-content-flex-end">
+                            <button id="getMotivationBtn" class="button is-primary">Get Motivation</button>
+                            <button class="button closeModalBtn" data-target-modal="motivateModal">Cancel</button>
+                        </footer>
                     </div>
                 </div>
 
-                <div id="dailyTasksContainer" class="tasks-grid">
-                    <!-- Task sections will be dynamically populated here by JS -->
+                <!-- Modal for LLM Chat (Peace of Mind) -->
+                <div id="llmChatModal" class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Talk About Stress Triggers</p>
+                            <button class="delete" aria-label="close" data-target-modal="llmChatModal"></button>
+                        </header>
+                        <section class="modal-card-body">
+                            <p>Describe what's on your mind. (This is a simulated chat)</p>
+                            <div class="field">
+                                <div class="control">
+                                    <textarea id="llmChatInput" class="textarea" rows="4" placeholder="Type here..."></textarea>
+                                </div>
+                            </div>
+                            <div id="llmChatResponse" class="content mt-3 p-2 has-background-light" style="min-height: 100px; max-height: 200px; overflow-y: auto;"></div>
+                        </section>
+                        <footer class="modal-card-foot is-justify-content-flex-end">
+                            <button id="sendToLlmBtn" class="button is-primary">Send</button>
+                            <button class="button closeModalBtn" data-target-modal="llmChatModal">Close</button>
+                        </footer>
+                    </div>
                 </div>
 
-                <button id="motivateMeBtn" class="btn btn-accent">Motivate Me Now!</button>
-                <button id="completeDayBtn" class="btn btn-primary">Mark Day as Complete</button>
-                <div id="dailyCompletionMessage" class="feedback-message hidden"></div>
-            </section>
-
-            <!-- Modal for Motivate Me Now -->
-            <div id="motivateModal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close-button" data-target-modal="motivateModal">×</span>
-                    <h3>Need a Boost?</h3>
-                    <p>Which area are you feeling unmotivated about?</p>
-                    <select id="motivationAreaSelect">
-                        <option value="sleep">Sleep</option>
-                        <option value="weightControl">Weight Control</option>
-                        <option value="exercise">Exercise</option>
-                        <option value="peaceOfMind">Peace of Mind</option>
-                        <option value="makeMeQuit">Make Me Quit</option>
-                    </select>
-                    <button id="getMotivationBtn" class="btn btn-primary">Get Motivation</button>
-                    <div id="motivationMessage" class="modal-response"></div>
+                <!-- Educational Content Modal (Example) -->
+                <div id="educationModal" class="modal">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p id="educationTitle" class="modal-card-title">Education</p>
+                            <button class="delete" aria-label="close" data-target-modal="educationModal"></button>
+                        </header>
+                        <section class="modal-card-body content">
+                            <p id="educationText"></p>
+                        </section>
+                        <footer class="modal-card-foot is-justify-content-flex-end">
+                             <button class="button closeModalBtn" data-target-modal="educationModal">Close</button>
+                        </footer>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Modal for LLM Chat (Peace of Mind) -->
-            <div id="llmChatModal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close-button" data-target-modal="llmChatModal">×</span>
-                    <h3>Talk About Stress Triggers</h3>
-                    <p>Describe what's on your mind. (This is a simulated chat)</p>
-                    <textarea id="llmChatInput" rows="4" placeholder="Type here..."></textarea>
-                    <button id="sendToLlmBtn" class="btn btn-primary">Send</button>
-                    <div id="llmChatResponse" class="modal-response"></div>
-                </div>
-            </div>
+            </main>
+        </div>
+    </section>
 
-            <!-- Educational Content Modal (Example) -->
-            <div id="educationModal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close-button" data-target-modal="educationModal">×</span>
-                    <h3 id="educationTitle"></h3>
-                    <p id="educationText"></p>
-                </div>
-            </div>
-
-            <!-- Simple Notification / Reminder Area -->
-            <div id="inAppNotification" class="notification-bar hidden">
-                <p id="inAppNotificationText"></p>
-                <button id="dismissNotificationBtn">×</button>
-            </div>
-
-        </main>
-
-        <footer class="app-footer">
-            <p>© <span id="currentYear"></span> Body & Soul App. All rights reserved. (Client-side simulation)</p>
-            <p><a href="#" id="communityLinkPlaceholder">Community Forum (Placeholder)</a></p>
-        </footer>
+    <!-- In-app notification, can be styled with Bulma's notification -->
+    <div id="inAppNotification" class="notification is-hidden is-fixed-bottom-custom p-3 m-3">
+        <button id="dismissNotificationBtn" class="delete"></button>
+        <span id="inAppNotificationText">Notification message here.</span>
     </div>
+
+
+    <footer class="footer py-4 mt-auto">
+        <div class="content has-text-centered">
+            <p>
+                © <span id="currentYear"></span> Body & Soul App. Client-side simulation.
+            </p>
+            <p>
+                <a href="#" id="communityLinkPlaceholder" class="has-text-link">Community Forum (Placeholder)</a>
+            </p>
+        </div>
+    </footer>
 
     <script src="script.js" defer></script>
 </body>

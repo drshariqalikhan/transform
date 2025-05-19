@@ -1,457 +1,72 @@
-/* style.css */
-:root {
-    --primary-color: #4A90E2; /* A calm blue */
-    --secondary-color: #50E3C2; /* A vibrant teal */
-    --accent-color: #F5A623; /* A warm orange for accents */
-    --text-color: #333333;
-    --background-color: #f4f7f6; /* Off-white, very light grey */
-    --card-background: #ffffff;
-    --border-color: #e0e0e0;
-    --input-border-color: #cccccc;
-    --success-color: #4CAF50;
-    --error-color: #F44336;
-    --disabled-color: #BDBDBD;
+/* style.css - Minimal custom styles with Bulma */
 
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    --border-radius: 8px;
-    --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    --box-shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
-    --spacing-unit: 8px;
-}
+/* Make screens take up available height (optional, Bulma sections manage this well) */
+/*
+main#appContent > section {
+    min-height: calc(100vh - 250px); /* Adjust based on header/footer height */
+/* }
+*/
 
-/* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* Ensure content within cards is not overly spaced by default Bulma content styling if needed */
+.card .content p:not(:last-child) {
+    margin-bottom: 0.75em; /* Slightly less than Bulma's default 1em if desired */
 }
-
-body {
-    font-family: var(--font-family);
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding: calc(var(--spacing-unit) * 2);
+.card .content .field:not(:last-child) {
+    margin-bottom: 0.75rem;
 }
-
-.app-container {
-    width: 100%;
-    max-width: 800px; /* Max width for larger screens */
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - (var(--spacing-unit) * 4)); /* Ensure footer stays down */
-}
-
-.app-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.app-header h1 {
-    font-size: 1.8em;
-    margin: 0;
-}
-
-.user-info {
-    font-size: 0.9em;
-    text-align: right;
-}
-.user-info span {
-    display: block;
-}
-#userPointsDisplay::before {
-    content: "Points: ";
-}
-
-
-#appContent {
-    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
-    flex-grow: 1;
-}
-
-.screen {
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.hidden {
-    display: none !important;
-}
-
-h2 {
-    color: var(--primary-color);
-    margin-bottom: calc(var(--spacing-unit) * 2);
-    font-size: 1.5em;
-}
-
-h3 {
-    color: var(--text-color);
-    margin-bottom: var(--spacing-unit);
-    font-size: 1.2em;
-}
-
-p {
-    margin-bottom: var(--spacing-unit);
-}
-
-/* Forms */
-.form-group {
-    margin-bottom: calc(var(--spacing-unit) * 2);
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: var(--spacing-unit);
-    font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="time"],
-.form-group input[type="date"],
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: calc(var(--spacing-unit) * 1.5);
-    border: 1px solid var(--input-border-color);
-    border-radius: var(--border-radius);
-    font-size: 1em;
-    background-color: #fff; /* Ensure inputs are white even if page bg changes */
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-.form-group textarea {
-    min-height: 80px;
-    resize: vertical;
-}
-
-/* Buttons */
-.btn {
-    display: inline-block;
-    padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 3);
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 1em;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    margin-top: var(--spacing-unit);
-    margin-right: var(--spacing-unit);
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-.btn-primary:hover {
-    background-color: #3a7bc8; /* Darken primary */
-    box-shadow: var(--box-shadow-hover);
-}
-
-.btn-secondary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-.btn-secondary:hover {
-    background-color: #40c0a8; /* Darken secondary */
-    box-shadow: var(--box-shadow-hover);
-}
-
-.btn-accent {
-    background-color: var(--accent-color);
-    color: white;
-}
-.btn-accent:hover {
-    background-color: #d88c1e; /* Darken accent */
-    box-shadow: var(--box-shadow-hover);
-}
-
-.btn-small {
-    padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
-    font-size: 0.9em;
-}
-
-.btn:disabled {
-    background-color: var(--disabled-color);
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-
-/* Dashboard */
-.dashboard-header {
-    margin-bottom: calc(var(--spacing-unit) * 3);
-}
-.progress-container {
-    margin-top: var(--spacing-unit);
-}
-.progress-container progress {
-    width: 100%;
-    height: calc(var(--spacing-unit) * 2);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-.progress-container progress::-webkit-progress-bar {
-    background-color: #eee;
-    border-radius: var(--border-radius);
-}
-.progress-container progress::-webkit-progress-value {
-    background-color: var(--secondary-color);
-    border-radius: var(--border-radius);
-    transition: width 0.5s ease-in-out;
-}
-.progress-container progress::-moz-progress-bar { /* Firefox */
-    background-color: var(--secondary-color);
-    border-radius: var(--border-radius);
-}
-
-
-.tasks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: calc(var(--spacing-unit) * 2);
-}
-
-.task-card {
-    background-color: var(--card-background);
-    padding: calc(var(--spacing-unit) * 2);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    border: 1px solid var(--border-color);
-}
-.task-card.completed-task {
-    background-color: #e6ffed; /* Light green for completed */
-    border-left: 5px solid var(--success-color);
-}
-.task-card h3 {
-    margin-top: 0;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--spacing-unit);
-    margin-bottom: calc(var(--spacing-unit) * 1.5);
-}
-.task-card .task-item {
-    margin-bottom: var(--spacing-unit);
+.card .content .task-item {
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
 }
-.task-card .task-item input[type="checkbox"] {
-    margin-right: var(--spacing-unit);
-    width: 18px;
-    height: 18px;
+.card .content .task-item input[type="checkbox"] {
+    margin-right: 0.5em;
 }
-.task-card .task-input-group {
-    margin-top: var(--spacing-unit);
-    margin-bottom: calc(var(--spacing-unit) * 1.5);
-}
-.task-card .task-input-group label {
-    font-size: 0.9em;
-    margin-bottom: calc(var(--spacing-unit) / 2);
-}
-.task-card .task-display {
+.card .content .task-display {
     font-style: italic;
-    color: #555;
-    margin-top: var(--spacing-unit);
     font-size: 0.9em;
+    margin-top: 0.5em;
 }
-
-/* Modals */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.5); /* Dim background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.card .content .small-input { /* For mood/stress inputs */
+    width: 60px !important;
+    padding: 0.25em 0.5em !important;
+    margin: 0 0.25em;
+    text-align: center;
 }
-
-.modal-content {
-    background-color: var(--card-background);
-    margin: auto;
-    padding: calc(var(--spacing-unit) * 3);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    position: relative;
-    animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: var(--spacing-unit);
-    right: calc(var(--spacing-unit) * 2);
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: var(--text-color);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.modal-response {
-    margin-top: calc(var(--spacing-unit) * 2);
-    padding: var(--spacing-unit);
-    background-color: var(--background-color);
-    border-radius: var(--border-radius);
-    font-size: 0.9em;
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-/* Feedback Messages */
-.feedback-message {
-    margin-top: var(--spacing-unit);
-    padding: var(--spacing-unit);
-    border-radius: var(--border-radius);
-    font-size: 0.9em;
-}
-.feedback-message.success {
-    background-color: #e6ffed;
-    color: var(--success-color);
-    border: 1px solid var(--success-color);
-}
-.feedback-message.error {
-    background-color: #ffebee;
-    color: var(--error-color);
-    border: 1px solid var(--error-color);
+.card .content hr {
+    margin: 0.75rem 0;
 }
 
 
-/* Notification Bar */
-.notification-bar {
+/* Custom fixed bottom notification bar if Bulma's default doesn't fit the need */
+.is-fixed-bottom-custom {
     position: fixed;
     bottom: 0;
     left: 0;
+    right: 0;
+    z-index: 35; /* Below Bulma modals (usually z-index 40) */
+    width: auto; /* Override Bulma's width: 100% for notifications if needed */
+    margin: 1rem !important; /* Bulma adds margin by default, this standardizes it */
+}
+
+/* Hide the .is-hidden class, Bulma has its own .is-hidden */
+.is-hidden {
+    display: none !important;
+}
+
+/* Ensure full width select within control */
+.select.is-fullwidth, .select.is-fullwidth select {
     width: 100%;
-    background-color: var(--accent-color);
-    color: white;
-    padding: var(--spacing-unit) calc(var(--spacing-unit) * 2);
-    text-align: center;
-    z-index: 1001; /* Above modals if needed, or adjust */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.notification-bar p {
-    margin: 0;
-}
-#dismissNotificationBtn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5em;
-    cursor: pointer;
-    padding: 0 var(--spacing-unit);
 }
 
-
-/* Footer */
-.app-footer {
-    background-color: #e9ecef; /* Light grey for footer */
-    color: #6c757d; /* Muted text color */
-    padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 3);
-    text-align: center;
-    font-size: 0.85em;
-    border-top: 1px solid var(--border-color);
-}
-.app-footer p {
-    margin-bottom: calc(var(--spacing-unit) / 2);
-}
-.app-footer a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-.app-footer a:hover {
-    text-decoration: underline;
+/* Adjust task card styling if necessary to fit Bulma's structure */
+.task-card.completed-task {
+    border-left: 5px solid hsl(141, 53%, 53%); /* Bulma's success color */
+    background-color: hsl(141, 53%, 96%); /* Lighter success */
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    body {
-        padding: var(--spacing-unit);
-    }
-    .app-container {
-        min-height: calc(100vh - (var(--spacing-unit) * 2));
-    }
-    .app-header {
-        padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
-        flex-direction: column;
-    }
-    .app-header h1 {
-        font-size: 1.5em;
-        margin-bottom: var(--spacing-unit);
-    }
-    .user-info { text-align: center; }
-
-    #appContent {
-        padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
-    }
-    .tasks-grid {
-        grid-template-columns: 1fr; /* Stack cards on small screens */
-    }
-    .btn {
-        width: 100%;
-        margin-right: 0;
-        margin-bottom: var(--spacing-unit);
-    }
-    .btn:last-child {
-        margin-bottom: 0;
-    }
-    .modal-content {
-        width: 95%;
-    }
-}
-
-/* Utility for visually hidden but accessible by screen readers */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+/* Ensure buttons in dynamically added cards are styled */
+.task-card .button.is-small {
+    margin-left: 0.5em;
+    vertical-align: middle;
 }
