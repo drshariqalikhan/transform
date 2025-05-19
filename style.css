@@ -1,29 +1,115 @@
-/* style.css - With Dark Mode, FAB, Calendar, Switch, Swipe */
+/* style.css - With "Hello UI" Light Theme & Dark Mode Option */
 
-/* Basic App Wrapper to help with potential full height */
-.app-wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-main#appContent {
-    flex-grow: 1;
+/* --- "Hello UI" Light Theme Variables --- */
+:root {
+    /* Default Theme (Hello UI Inspired) */
+    --hello-gradient-start: #6a11cb; /* Deep Purple */
+    --hello-gradient-mid: #fc00ff;   /* Vibrant Pink/Magenta */
+    --hello-gradient-end: #0072ff;   /* Vibrant Blue */
+
+    --hello-primary-accent: #00e0ff; /* Cyan */
+    --hello-secondary-accent: #ffeb3b; /* Yellow */
+    --hello-text-on-dark-bg: #ffffff;
+    --hello-text-on-light-bg: #363636; /* Bulma's default text grey */
+    --hello-card-bg: rgba(255, 255, 255, 0.9); /* Slightly opaque white cards */
+    --hello-input-bg: #ffffff;
+    --hello-input-border: #dbdbdb; /* Bulma's default */
+    --hello-box-bg: #ffffff; /* Default Bulma box */
+
+    /* Map to Bulma variables for light mode */
+    --bulma-body-background-color: linear-gradient(135deg, var(--hello-gradient-start) 0%, var(--hello-gradient-mid) 50%, var(--hello-gradient-end) 100%);
+    --bulma-body-color: var(--hello-text-on-dark-bg); /* Text on gradient body can be light */
+    --bulma-text: var(--hello-text-on-light-bg); /* Default text on cards/boxes */
+    --bulma-text-strong: #222;
+    --bulma-link: var(--hello-primary-accent);
+    --bulma-link-hover: #4ef4ff;
+
+    --bulma-primary: var(--hello-primary-accent); /* Cyan as primary action color */
+    --bulma-primary-invert: var(--hello-text-on-light-bg); /* Text on primary buttons */
+    --bulma-info: var(--hello-gradient-end); /* Use the vibrant blue for info */
+    --bulma-success: #23d160; /* Keep Bulma default green */
+    --bulma-warning: #ffdd57; /* Keep Bulma default yellow */
+    --bulma-danger: #ff3860;  /* Keep Bulma default red */
+
+    --bulma-box-background-color: var(--hello-box-bg);
+    --bulma-card-background-color: var(--hello-card-bg);
+    --bulma-card-header-color: var(--hello-text-on-light-bg);
+    --bulma-card-color: var(--hello-text-on-light-bg);
+
+
+    --bulma-input-background-color: var(--hello-input-bg);
+    --bulma-input-border-color: var(--hello-input-border);
+    --bulma-input-color: var(--hello-text-on-light-bg);
+    --bulma-input-placeholder-color: #a0a0a0;
+
+    --bulma-button-background-color: #f5f5f5; /* Default button bg */
+    --bulma-button-text-color: var(--hello-text-on-light-bg);
+    --bulma-button-border-color: var(--hello-input-border);
+
+    --bulma-progress-bar-background-color: #e0e0e0;
+    --bulma-progress-value-background-color: var(--bulma-primary); /* Cyan progress */
+
+    /* Navbar for Hello UI theme */
+    --navbar-background-hello: linear-gradient(to right, var(--hello-gradient-start), var(--hello-gradient-mid)); /* Gradient for navbar */
+    --navbar-text-hello: var(--hello-text-on-dark-bg);
+    --navbar-item-hover-bg-hello: rgba(255, 255, 255, 0.1);
 }
 
-/* --- Dark Mode Theme --- */
+/* Apply Hello UI Theme (default) */
+body {
+    background: var(--bulma-body-background-color);
+    background-attachment: fixed; /* Makes gradient fixed during scroll */
+    color: var(--bulma-body-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.app-navbar { /* Custom class for Hello UI navbar styling */
+    background: var(--navbar-background-hello);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.app-navbar .navbar-item,
+.app-navbar .navbar-link,
+.app-navbar .navbar-burger span {
+    color: var(--navbar-text-hello);
+}
+.app-navbar .navbar-burger span {
+    background-color: var(--navbar-text-hello); /* Hamburger lines color */
+}
+.app-navbar .navbar-item:hover,
+.app-navbar .navbar-link:hover {
+    background-color: var(--navbar-item-hover-bg-hello);
+    color: var(--navbar-text-hello); /* Keep text color on hover */
+}
+.app-navbar .navbar-title, .user-info-navbar p {
+    color: var(--navbar-text-hello) !important; /* Ensure visibility on gradient */
+}
+.screen-title { /* For titles on welcome, registration etc. */
+    /* color: var(--hello-gradient-start); */ /* Using Bulma primary which is cyan */
+    color: var(--bulma-text-strong); /* Make titles more prominent on light cards */
+}
+html:not(.dark-mode) .box, html:not(.dark-mode) .card {
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02);
+}
+/* Adjust text color for inputs on light cards specifically */
+html:not(.dark-mode) .input, html:not(.dark-mode) .textarea, html:not(.dark-mode) .select select,
+html:not(.dark-mode) .label {
+    color: var(--hello-text-on-light-bg);
+}
+
+/* --- Dark Mode Theme (copied from previous, might need minor adjustments) --- */
 html.dark-mode {
-    /* Core Colors */
-    --bulma-body-background-color: #2c2c2c; /* Dark grey */
-    --bulma-text: #e0e0e0; /* Light grey text */
+    --bulma-body-background-color: #2c2c2c;
+    --bulma-body-color: #e0e0e0;
+    --bulma-text: #e0e0e0;
     --bulma-text-strong: #ffffff;
-    --bulma-link: #61dafb; /* A light blue for links */
+    --bulma-link: #61dafb;
     --bulma-link-hover: #74e4ff;
-    --bulma-border: #4a4a4a; /* Darker border */
+    --bulma-border: #4a4a4a;
     --bulma-border-hover: #606060;
-
-    /* Component Backgrounds */
-    --bulma-box-background-color: #363636; /* Slightly lighter than body */
+    --bulma-box-background-color: #363636;
     --bulma-card-background-color: #3a3a3a;
+    --bulma-card-header-color: #ffffff;
+    --bulma-card-color: #e0e0e0;
     --bulma-input-background-color: #3f3f3f;
     --bulma-input-color: var(--bulma-text);
     --bulma-input-border-color: var(--bulma-border);
@@ -33,240 +119,99 @@ html.dark-mode {
     --bulma-select-color: var(--bulma-text);
     --bulma-textarea-background-color: var(--bulma-input-background-color);
     --bulma-textarea-color: var(--bulma-text);
-
-
-    /* Bulma Primary, Info, Success, Warning, Danger - slightly desaturated/adjusted for dark */
-    --bulma-primary: #00a991; /* Original: #00d1b2 */
+    --bulma-primary: #00a991;
     --bulma-primary-invert: #ffffff;
-    --bulma-info: #3092dd;    /* Original: #209cee */
-    --bulma-success: #3ba744; /* Original: #23d160 */
-    --bulma-warning: #ffb747; /* Original: #ffdd57 */
-    --bulma-danger: #e74c3c;  /* Original: #ff3860 */
-
+    --bulma-info: #3092dd;
+    --bulma-success: #3ba744;
+    --bulma-warning: #ffb747;
+    --bulma-danger: #e74c3c;
     --bulma-button-background-color: #4a4a4a;
     --bulma-button-text-color: var(--bulma-text);
     --bulma-button-border-color: #5a5a5a;
-
     --bulma-notification-background-color: #424242;
-    
-    --bulma-progress-bar-background-color: #444; /* Background of the progress track */
+    --bulma-progress-bar-background-color: #444;
+    --bulma-progress-value-background-color: var(--bulma-success);
+
+    /* Dark mode specific navbar if different from default dark components */
+    --navbar-background-dark: #222; /* Example: solid dark for navbar in dark mode */
+    --navbar-text-dark: #e0e0e0;
+    --navbar-item-hover-bg-dark: #333;
 }
 
-/* Apply variables to Bulma - Bulma uses CSS variables extensively in v1.x */
+/* Apply Dark Mode Specific Overrides */
 html.dark-mode body {
-    background-color: var(--bulma-body-background-color);
-    color: var(--bulma-text);
+    background: var(--bulma-body-background-color); /* Solid color for dark mode body */
+    color: var(--bulma-body-color);
 }
-html.dark-mode .navbar.is-primary { background-color: var(--bulma-primary); }
-html.dark-mode .title { color: var(--bulma-text-strong); }
-html.dark-mode .subtitle, html.dark-mode .label, html.dark-mode p, html.dark-mode .content { color: var(--bulma-text); }
+html.dark-mode .app-navbar {
+    background: var(--navbar-background-dark); /* Different background for navbar in dark mode */
+}
+html.dark-mode .app-navbar .navbar-item,
+html.dark-mode .app-navbar .navbar-link,
+html.dark-mode .app-navbar .navbar-burger span {
+    color: var(--navbar-text-dark);
+}
+html.dark-mode .app-navbar .navbar-burger span {
+    background-color: var(--navbar-text-dark);
+}
+html.dark-mode .app-navbar .navbar-item:hover,
+html.dark-mode .app-navbar .navbar-link:hover {
+    background-color: var(--navbar-item-hover-bg-dark);
+}
+html.dark-mode .app-navbar .navbar-title, html.dark-mode .user-info-navbar p {
+    color: var(--navbar-text-dark) !important;
+}
+html.dark-mode .screen-title {
+    color: var(--bulma-text-strong);
+}
 html.dark-mode .box { background-color: var(--bulma-box-background-color); box-shadow: 0 0.5em 1em -0.125em rgba(200, 200, 200, 0.1), 0 0px 0 1px rgba(200, 200, 200, 0.02); }
-html.dark-mode .card { background-color: var(--bulma-card-background-color); color: var(--bulma-text); }
-html.dark-mode .card-header-title { color: var(--bulma-text-strong); }
-html.dark-mode .input, html.dark-mode .textarea, html.dark-mode .select select {
-    background-color: var(--bulma-input-background-color);
-    border-color: var(--bulma-input-border-color);
-    color: var(--bulma-input-color);
-}
+html.dark-mode .card { background-color: var(--bulma-card-background-color); color: var(--bulma-card-color); }
+html.dark-mode .card-header-title { color: var(--bulma-card-header-color); }
+html.dark-mode .input, html.dark-mode .textarea, html.dark-mode .select select { background-color: var(--bulma-input-background-color); border-color: var(--bulma-input-border-color); color: var(--bulma-input-color); }
 html.dark-mode .input::placeholder, html.dark-mode .textarea::placeholder { color: var(--bulma-input-placeholder-color); }
-html.dark-mode .button {
-    background-color: var(--bulma-button-background-color);
-    border-color: var(--bulma-button-border-color);
-    color: var(--bulma-button-text-color);
-}
+html.dark-mode .button { background-color: var(--bulma-button-background-color); border-color: var(--bulma-button-border-color); color: var(--bulma-button-text-color); }
 html.dark-mode .button.is-primary { background-color: var(--bulma-primary); color: var(--bulma-primary-invert); }
-html.dark-mode .button.is-link { background-color: var(--bulma-info); color: var(--bulma-primary-invert); }
-html.dark-mode .button.is-info { background-color: var(--bulma-info); color: var(--bulma-primary-invert); }
-html.dark-mode .button.is-success { background-color: var(--bulma-success); color: var(--bulma-primary-invert); }
-html.dark-mode .button.is-warning { background-color: var(--bulma-warning); color: #333; } /* Warning often needs dark text */
-html.dark-mode .button.is-danger { background-color: var(--bulma-danger); color: var(--bulma-primary-invert); }
-
+html.dark-mode .button.is-link { background-color: var(--bulma-info); color: var(--bulma-primary-invert); } /* Ensure link button is styled for dark */
+/* ... other dark mode button color overrides ... */
 html.dark-mode .notification { background-color: var(--bulma-notification-background-color); color: var(--bulma-text); }
-html.dark-mode .notification.is-primary { background-color: var(--bulma-primary); color: var(--bulma-primary-invert); }
-/* Add other notification types as needed */
-
 html.dark-mode .progress { background-color: var(--bulma-progress-bar-background-color); }
-html.dark-mode .progress::-webkit-progress-value { background-color: var(--bulma-success) !important; } /* Ensure Bulma's !important is overridden */
-html.dark-mode .progress::-moz-progress-bar { background-color: var(--bulma-success) !important; }
-
-html.dark-mode .modal-card-head, html.dark-mode .modal-card-foot {
-    background-color: var(--bulma-box-background-color); /* Or a slightly different shade */
-    border-bottom-color: var(--bulma-border);
-    border-top-color: var(--bulma-border);
-}
+html.dark-mode .progress::-webkit-progress-value { background-color: var(--bulma-progress-value-background-color) !important; }
+html.dark-mode .progress::-moz-progress-bar { background-color: var(--bulma-progress-value-background-color) !important; }
+html.dark-mode .modal-card-head, html.dark-mode .modal-card-foot { background-color: var(--bulma-box-background-color); border-bottom-color: var(--bulma-border); border-top-color: var(--bulma-border); }
 html.dark-mode .modal-card-title { color: var(--bulma-text-strong); }
 html.dark-mode .modal-card-body { background-color: var(--bulma-card-background-color); }
-html.dark-mode .delete::before, html.dark-mode .delete::after { background-color: var(--bulma-text); } /* Ensure modal delete button is visible */
+html.dark-mode .delete::before, html.dark-mode .delete::after { background-color: var(--bulma-text); }
+html.dark-mode .calendar-day.is-other-month { color: #777; background-color: #303030; }
+html.dark-mode .calendar-day.is-completed-day { background-color: hsl(141, 53%, 35%); color: hsl(141, 53%, 90%); }
+html.dark-mode .task-card.completed-task { border-left-color: var(--bulma-success); background-color: #2a4b34; }
 
+/* Remove FAB CSS */
+/* .fab-container, .fab-main, .fab-options, .fab-option { display: none !important; } */
 
-/* --- Custom Switch for Dark Mode Toggle --- */
-.switch-button {
-  position: relative;
-  display: inline-block;
-  width: 50px; /* smaller switch */
-  height: 28px; /* smaller switch */
-}
-.switch-button input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px; /* smaller handle */
-  width: 20px;  /* smaller handle */
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: .4s;
-}
-input:checked + .slider {
-  background-color: var(--bulma-primary, #00d1b2); /* Use Bulma primary if available */
-}
-html.dark-mode input:checked + .slider {
-  background-color: var(--bulma-primary); /* Ensure it uses the dark mode primary */
-}
-input:focus + .slider {
-  box-shadow: 0 0 1px var(--bulma-primary, #00d1b2);
-}
-input:checked + .slider:before {
-  transform: translateX(22px); /* Adjust for smaller size */
-}
-.slider.round {
-  border-radius: 28px;
-}
-.slider.round:before {
-  border-radius: 50%;
-}
-
-
-/* --- Floating Action Button (FAB) Menu --- */
-.fab-container {
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    z-index: 100; /* Above notifications */
-    display: flex;
-    flex-direction: column-reverse; /* Options appear above main button */
-    align-items: center;
-}
-.fab-main {
-    width: 56px;
-    height: 56px;
-    font-size: 1.5em; /* For icon size */
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-}
-.fab-options {
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    margin-bottom: 10px; /* Space between main and options */
-    transition: all 0.3s ease-in-out;
-    opacity: 0;
-    transform: translateY(20px) scale(0.5);
-    pointer-events: none; /* Initially not interactive */
-}
-.fab-container.is-active .fab-options {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-.fab-option {
-    width: 48px;
-    height: 48px;
-    margin-top: 10px; /* Space between option buttons */
-    font-size: 1.2em; /* For icon size */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-}
-.fab-main .icon, .fab-option .icon {
-    transition: transform 0.3s ease-in-out;
-}
-.fab-container.is-active .fab-main .icon {
-    transform: rotate(45deg); /* Rotates '+' to 'x' */
-}
-
-/* --- Calendar Styling --- */
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    text-align: center;
-}
-.calendar-header {
-    font-weight: bold;
-    padding: 5px;
-    font-size: 0.9em;
-}
-.calendar-day {
-    padding: 10px 5px;
-    border: 1px solid var(--bulma-border, #dbdbdb);
-    border-radius: 4px;
-    font-size: 0.9em;
-    min-height: 40px; /* Ensure days have some height */
-    cursor: default; /* Default, no action on click */
-}
-html.dark-mode .calendar-day {
-    border-color: var(--bulma-border);
-}
-.calendar-day.is-other-month {
-    color: #aaa;
-    background-color: #f5f5f5;
-}
-html.dark-mode .calendar-day.is-other-month {
-    color: #777;
-    background-color: #303030;
-}
-.calendar-day.is-completed-day {
-    background-color: hsl(141, 53%, 86%); /* Light success */
-    text-decoration: line-through;
-    color: hsl(141, 53%, 21%); /* Dark success text */
-}
-html.dark-mode .calendar-day.is-completed-day {
-    background-color: hsl(141, 53%, 35%); /* Darker success for dark mode */
-    color: hsl(141, 53%, 90%);
-}
-.calendar-day.is-today {
-    font-weight: bold;
-    border-color: var(--bulma-primary, #00d1b2);
-    box-shadow: 0 0 0 1px var(--bulma-primary, #00d1b2);
-}
-
-
-/* --- Swipe-to-Hide Card Styling --- */
-.task-card.is-swiping {
-    transition: transform 0.1s linear; /* Quick feedback during swipe */
-}
-.task-card.is-hiding-swipe {
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-    transform: translateX(-100%) rotate(-5deg);
-    opacity: 0;
-}
-/* Ensure Bulma's card styles are still respected */
-.task-card {
-    position: relative; /* For potential absolute positioned swipe indicators */
-    user-select: none; /* Prevent text selection during swipe */
-}
-.task-card.completed-task { /* Original completion style */
-    border-left: 5px solid hsl(141, 53%, 53%);
-    background-color: hsl(141, 53%, 96%);
-}
-html.dark-mode .task-card.completed-task {
-    border-left-color: var(--bulma-success);
-    background-color: #2a4b34; /* Dark green tint */
-}
-
-/* Minimal custom styles from previous version */
+/* Basic App Wrapper & Other Styles (copied from previous, ensure no conflicts) */
+.app-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+main#appContent { flex-grow: 1; }
+.switch-button { position: relative; display: inline-block; width: 50px; height: 28px; }
+.switch-button input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: var(--bulma-primary, #00d1b2); }
+html.dark-mode input:checked + .slider { background-color: var(--bulma-primary); }
+input:focus + .slider { box-shadow: 0 0 1px var(--bulma-primary, #00d1b2); }
+input:checked + .slider:before { transform: translateX(22px); }
+.slider.round { border-radius: 28px; }
+.slider.round:before { border-radius: 50%; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+.calendar-header { font-weight: bold; padding: 5px; font-size: 0.9em; }
+.calendar-day { padding: 10px 5px; border: 1px solid var(--bulma-border, #dbdbdb); border-radius: 4px; font-size: 0.9em; min-height: 40px; cursor: default; }
+html:not(.dark-mode) .calendar-day { border-color: var(--hello-input-border); }
+.calendar-day.is-other-month { color: #aaa; background-color: #f5f5f5; }
+.calendar-day.is-completed-day { background-color: hsl(141, 53%, 86%); text-decoration: line-through; color: hsl(141, 53%, 21%); }
+.calendar-day.is-today { font-weight: bold; border-color: var(--bulma-primary, #00d1b2); box-shadow: 0 0 0 1px var(--bulma-primary, #00d1b2); }
+.task-card.is-swiping { transition: transform 0.1s linear; }
+.task-card.is-hiding-swipe { transition: transform 0.3s ease-out, opacity 0.3s ease-out; transform: translateX(-100%) rotate(-5deg); opacity: 0; }
+.task-card { position: relative; user-select: none; }
+.task-card.completed-task { border-left: 5px solid hsl(141, 53%, 53%); background-color: hsl(141, 53%, 96%); }
 .card .content p:not(:last-child) { margin-bottom: 0.75em; }
 .card .content .field:not(:last-child) { margin-bottom: 0.75rem; }
 .card .content .task-item { margin-bottom: 0.5rem; display: flex; align-items: center; }
@@ -277,8 +222,27 @@ html.dark-mode .task-card.completed-task {
 .is-fixed-bottom-custom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 35; width: auto; margin: 1rem !important; }
 .select.is-fullwidth, .select.is-fullwidth select { width: 100%; }
 .task-card .button.is-small { margin-left: 0.5em; vertical-align: middle; }
+.card-header-title .checkbox { vertical-align: middle; }
 
-/* Ensure checkbox in card header is aligned */
-.card-header-title .checkbox {
-    vertical-align: middle;
+/* Ensure navbar items in the dropdown menu are styled correctly for Hello UI theme on mobile */
+@media screen and (max-width: 1023px) {
+    .app-navbar .navbar-menu {
+        background-color: var(--hello-gradient-mid); /* Or a solid color from the palette */
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    html.dark-mode .app-navbar .navbar-menu {
+        background-color: var(--navbar-background-dark); /* Match dark mode navbar */
+    }
+    .app-navbar .navbar-menu .navbar-item {
+        color: var(--navbar-text-hello);
+    }
+    html.dark-mode .app-navbar .navbar-menu .navbar-item {
+        color: var(--navbar-text-dark);
+    }
+    .app-navbar .navbar-menu .navbar-item:hover {
+        background-color: var(--navbar-item-hover-bg-hello);
+    }
+     html.dark-mode .app-navbar .navbar-menu .navbar-item:hover {
+        background-color: var(--navbar-item-hover-bg-dark);
+    }
 }

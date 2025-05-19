@@ -14,14 +14,18 @@ document.addEventListener('DOMContentLoaded', () => {
             continueChallengeBtn: document.getElementById('continueChallengeBtn'),
             motivateMeBtn: document.getElementById('motivateMeBtn'),
             completeDayBtn: document.getElementById('completeDayBtn'),
-            // settingsGearIcon: document.getElementById('settingsGearIcon'), // REMOVED
             darkModeToggle: document.getElementById('darkModeToggle'),
             backToDashboardBtn: document.getElementById('backToDashboardBtn'),
             homeButton: document.getElementById('homeButton'),
 
+            navbarBurger: document.querySelector('.navbar-burger'), // For hamburger menu
+            navbarMenuContent: document.getElementById('navbarMenuContent'), // The menu itself
+            menuCalendarBtn: document.getElementById('menuCalendarBtn'), // Calendar in navbar menu
+            menuSettingsBtn: document.getElementById('menuSettingsBtn'), // Settings in navbar menu
+
             registrationForm: document.getElementById('registrationForm'),
             baselineForm: document.getElementById('baselineForm'),
-
+            // ... other elements from previous version ...
             dashboardTitle: document.getElementById('dashboardTitle'),
             currentWeekDisplay: document.getElementById('currentWeekDisplay'),
             challengeProgress: document.getElementById('challengeProgress'),
@@ -29,19 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
             dailyCompletionMessage: document.getElementById('dailyCompletionMessage'),
             userNameDisplay: document.getElementById('userNameDisplay'),
             userPointsDisplay: document.getElementById('userPointsDisplay'),
-
-            fabContainer: document.querySelector('.fab-container'),
-            fabMainBtn: document.getElementById('fabMainBtn'),
-            fabCalendarBtn: document.getElementById('fabCalendarBtn'),
-            fabSettingsBtn: document.getElementById('fabSettingsBtn'), // ADDED
-
             calendarModal: document.getElementById('calendarModal'),
             calendarModalTitle: document.getElementById('calendarModalTitle'),
             calendarMonthYear: document.getElementById('calendarMonthYear'),
             calendarGrid: document.querySelector('#calendarModal .calendar-grid'),
             prevMonthBtn: document.getElementById('prevMonthBtn'),
             nextMonthBtn: document.getElementById('nextMonthBtn'),
-
             motivateModal: document.getElementById('motivateModal'),
             motivationAreaSelect: document.getElementById('motivationAreaSelect'),
             getMotivationBtn: document.getElementById('getMotivationBtn'),
@@ -53,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             educationModal: document.getElementById('educationModal'),
             educationTitle: document.getElementById('educationTitle'),
             educationText: document.getElementById('educationText'),
-
             inAppNotification: document.getElementById('inAppNotification'),
             inAppNotificationText: document.getElementById('inAppNotificationText'),
             dismissNotificationBtn: document.getElementById('dismissNotificationBtn'),
@@ -61,40 +57,31 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         state: { /* ... (no changes to state structure) ... */
-            currentScreen: 'welcome',
-            userData: null,
-            currentChallengeWeek: 1,
-            totalChallengeWeeks: 10,
-            today: new Date().toISOString().split('T')[0],
-            isDayCompleted: false,
-            previousScreen: 'dashboard',
-            calendar: {
-                currentDisplayDate: new Date()
-            },
-            swipe: {
-                touchstartX: 0, touchstartY: 0, touchendX: 0, touchendY: 0,
-                activeCard: null, threshold: 50, maxVerticalOffset: 75
-            }
+            currentScreen: 'welcome', userData: null, currentChallengeWeek: 1, totalChallengeWeeks: 10,
+            today: new Date().toISOString().split('T')[0], isDayCompleted: false, previousScreen: 'dashboard',
+            calendar: { currentDisplayDate: new Date() },
+            swipe: { touchstartX: 0, touchstartY: 0, touchendX: 0, touchendY: 0, activeCard: null, threshold: 50, maxVerticalOffset: 75 }
         },
-        DB_KEY: 'bodyAndSoulAppUserBulmaV2', // Keep V2 for swipe data structure
+        DB_KEY: 'bodyAndSoulAppUserBulmaV3', // Incremented for new theme default
         LLM_CHAT_API_ENDPOINT: 'https://api.example.com/llm-chat',
         MOTIVATION_API_ENDPOINT: 'https://api.example.com/motivate',
 
-
         init() {
-            console.log("App Initializing (FAB Settings, Default Dark Mode)...");
-            this.applyInitialDarkMode(); // Apply dark mode based on HTML class first
-            this.loadDarkModePreference(); // Then load saved preference (which might override initial)
+            console.log("App Initializing (Hamburger Menu, Hello UI Theme)...");
+            // Dark mode class is NOT on <html> by default in HTML anymore.
+            // loadDarkModePreference will apply it if saved preference is 'true'.
+            this.loadDarkModePreference();
             this.registerServiceWorker();
             this.loadData();
             this.setupEventListeners();
             this.updateFooterYear();
 
+            // ... (rest of init logic as before) ...
             if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) {
                 this.elements.continueChallengeBtn?.classList.remove('is-hidden');
                 if(this.elements.startChallengeBtn) this.elements.startChallengeBtn.textContent = 'Start Over';
                 this.navigateTo('dashboard');
-                this.state.previousScreen = 'dashboard'; // Set default previous screen
+                this.state.previousScreen = 'dashboard';
                 this.checkForMissedDays();
             } else if (this.state.userData && this.state.userData.isRegistered) {
                 this.navigateTo('baseline');
@@ -107,39 +94,30 @@ document.addEventListener('DOMContentLoaded', () => {
             this.requestNotificationPermission();
         },
 
-        applyInitialDarkMode() {
-            // The 'dark-mode' class is already on <html> by default in index.html
-            // This function can be used if you want to check localStorage *before* even rendering
-            // But for "default dark", having class in HTML is simpler.
-            // The toggle will correctly set it.
-            if (this.elements.darkModeToggle) {
-                this.elements.darkModeToggle.checked = this.elements.htmlRoot.classList.contains('dark-mode');
-            }
-        },
-
         loadDarkModePreference() {
             const savedPreference = localStorage.getItem('darkModeEnabled');
-            // If there's a saved preference, it overrides the HTML default
+            let darkModeActive;
+
             if (savedPreference !== null) {
-                const darkMode = savedPreference === 'true';
-                if (this.elements.darkModeToggle) this.elements.darkModeToggle.checked = darkMode;
-                if (darkMode) {
-                    this.elements.htmlRoot.classList.add('dark-mode');
-                } else {
-                    this.elements.htmlRoot.classList.remove('dark-mode');
-                }
+                darkModeActive = savedPreference === 'true';
             } else {
-                // No saved preference, ensure the HTML default is reflected in the toggle
-                // (This is now redundant if applyInitialDarkMode is called or HTML is correct)
-                if (this.elements.darkModeToggle) {
-                     this.elements.darkModeToggle.checked = this.elements.htmlRoot.classList.contains('dark-mode');
-                }
-                // And save this default state if it's the first time
-                localStorage.setItem('darkModeEnabled', this.elements.htmlRoot.classList.contains('dark-mode').toString());
+                // If no preference saved, default to light (no 'dark-mode' class)
+                darkModeActive = false; // "Hello UI" is default
+                localStorage.setItem('darkModeEnabled', 'false'); // Save this default
+            }
+
+            if (this.elements.darkModeToggle) {
+                this.elements.darkModeToggle.checked = darkModeActive;
+            }
+
+            if (darkModeActive) {
+                this.elements.htmlRoot.classList.add('dark-mode');
+            } else {
+                this.elements.htmlRoot.classList.remove('dark-mode');
             }
         },
 
-        toggleDarkMode() {
+        toggleDarkMode() { /* ... (no change from previous version) ... */
             const isEnabled = this.elements.darkModeToggle.checked;
             if (isEnabled) {
                 this.elements.htmlRoot.classList.add('dark-mode');
@@ -149,74 +127,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('darkModeEnabled', 'false');
             }
         },
-        
+
         setupEventListeners() {
             console.log("Setting up event listeners...");
 
-            // ... (existing listeners for start, continue, forms, modals, completeDay, dismissNotification) ...
-            // this.elements.settingsGearIcon.addEventListener('click', () => this.navigateTo('settings')); // REMOVED
-
-            if (this.elements.darkModeToggle) {
-                this.elements.darkModeToggle.addEventListener('change', () => this.toggleDarkMode());
-            } else { console.error("darkModeToggle not found"); }
-
-            if (this.elements.backToDashboardBtn) {
-                this.elements.backToDashboardBtn.addEventListener('click', () => this.navigateTo(this.state.previousScreen || 'dashboard'));
-            } else { console.error("backToDashboardBtn not found"); }
-
-            if (this.elements.homeButton) {
-                this.elements.homeButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) {
-                        this.navigateTo('dashboard');
-                    } else {
-                        this.navigateTo('welcome');
-                    }
+            // Hamburger Menu Toggle
+            if (this.elements.navbarBurger && this.elements.navbarMenuContent) {
+                this.elements.navbarBurger.addEventListener('click', () => {
+                    this.elements.navbarBurger.classList.toggle('is-active');
+                    this.elements.navbarMenuContent.classList.toggle('is-active');
                 });
-            } else { console.error("homeButton not found"); }
+                 console.log("Navbar burger listener attached.");
+            } else { console.error("Navbar burger or menu content not found for event listener."); }
 
-
-            // FAB Menu Listeners
-            if (this.elements.fabMainBtn) {
-                this.elements.fabMainBtn.addEventListener('click', () => {
-                    this.elements.fabContainer?.classList.toggle('is-active');
-                });
-            } else { console.error("fabMainBtn not found"); }
-
-            if (this.elements.fabCalendarBtn) {
-                this.elements.fabCalendarBtn.addEventListener('click', () => {
+            // Menu Item Click Handlers
+            if (this.elements.menuCalendarBtn) {
+                this.elements.menuCalendarBtn.addEventListener('click', () => {
                     this.renderCalendar();
                     this.showModal('calendarModal');
-                    this.elements.fabContainer?.classList.remove('is-active'); // Close FAB
+                    // Close hamburger menu after click (optional)
+                    this.elements.navbarBurger?.classList.remove('is-active');
+                    this.elements.navbarMenuContent?.classList.remove('is-active');
                 });
-            } else { console.error("fabCalendarBtn not found"); }
+                 console.log("Menu calendar button listener attached.");
+            } else { console.error("Menu calendar button not found!"); }
 
-            if (this.elements.fabSettingsBtn) { // ADDED Listener for FAB Settings
-                this.elements.fabSettingsBtn.addEventListener('click', () => {
+            if (this.elements.menuSettingsBtn) {
+                this.elements.menuSettingsBtn.addEventListener('click', () => {
                     this.navigateTo('settings');
-                    this.elements.fabContainer?.classList.remove('is-active'); // Close FAB
+                    // Close hamburger menu after click (optional)
+                    this.elements.navbarBurger?.classList.remove('is-active');
+                    this.elements.navbarMenuContent?.classList.remove('is-active');
                 });
-                 console.log("FAB Settings button event listener attached.");
-            } else { console.error("fabSettingsBtn not found!"); }
+                console.log("Menu settings button listener attached.");
+            } else { console.error("Menu settings button not found!"); }
 
 
-            // Calendar Modal Navigation
-            if (this.elements.prevMonthBtn) {
-                this.elements.prevMonthBtn.addEventListener('click', () => this.changeCalendarMonth(-1));
-            } else { console.error("prevMonthBtn not found"); }
-
-            if (this.elements.nextMonthBtn) {
-                this.elements.nextMonthBtn.addEventListener('click', () => this.changeCalendarMonth(1));
-            } else { console.error("nextMonthBtn not found"); }
-            
-            // ... (Rest of the event listeners, including swipe, registration, baseline form submissions, etc.)
-            // These should be the same as the previously corrected version.
-            // For brevity, I'm omitting the exact repetition of all of them.
-            // Ensure the robust checks `if (this.elements.elementName)` are kept.
+            // ... (rest of event listeners as in previous corrected version)
+            // Ensure robust checks: if (this.elements.elementName) { ... }
             if (this.elements.startChallengeBtn) { this.elements.startChallengeBtn.addEventListener('click', () => { if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) { if (confirm("Are you sure you want to start over? All progress will be lost.")) { this.state.userData = this.getDefaultUserData(); this.saveData(); this.navigateTo('registration'); } } else { this.navigateTo('registration'); } }); }
             if (this.elements.continueChallengeBtn) { this.elements.continueChallengeBtn.addEventListener('click', () => this.navigateTo('dashboard')); }
             if (this.elements.registrationForm) { this.elements.registrationForm.addEventListener('submit', (e) => { e.preventDefault(); this.handleRegistration(); }); }
             if (this.elements.baselineForm) { this.elements.baselineForm.addEventListener('submit', (e) => { e.preventDefault(); this.handleBaseline(); }); }
+            if (this.elements.darkModeToggle) { this.elements.darkModeToggle.addEventListener('change', () => this.toggleDarkMode()); }
+            if (this.elements.backToDashboardBtn) { this.elements.backToDashboardBtn.addEventListener('click', () => this.navigateTo(this.state.previousScreen || 'dashboard')); }
+            if (this.elements.homeButton) { this.elements.homeButton.addEventListener('click', (e) => { e.preventDefault(); if (this.state.userData && this.state.userData.isRegistered && this.state.userData.hasCompletedBaseline) { this.navigateTo('dashboard'); } else { this.navigateTo('welcome'); } }); }
             document.querySelectorAll('.delete, .closeModalBtn').forEach(btn => { btn.addEventListener('click', (e) => { const targetModalId = e.currentTarget.dataset.targetModal || e.currentTarget.closest('.modal')?.id; if (targetModalId) this.closeModal(targetModalId); }); });
             document.querySelectorAll('.modal-background').forEach(bg => { bg.addEventListener('click', (e) => { const targetModalId = e.currentTarget.closest('.modal')?.id; if (targetModalId) this.closeModal(targetModalId); }); });
             if (this.elements.dailyTasksContainer) { this.elements.dailyTasksContainer.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false }); this.elements.dailyTasksContainer.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false }); this.elements.dailyTasksContainer.addEventListener('touchend', (e) => this.handleTouchEnd(e), false); }
@@ -225,18 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.elements.sendToLlmBtn) { this.elements.sendToLlmBtn.addEventListener('click', () => this.handleLlmChatSend()); }
             if (this.elements.completeDayBtn) { this.elements.completeDayBtn.addEventListener('click', () => this.handleCompleteDay()); }
             if (this.elements.dismissNotificationBtn) { this.elements.dismissNotificationBtn.addEventListener('click', () => this.elements.inAppNotification?.classList.add('is-hidden')); }
+            if (this.elements.prevMonthBtn) this.elements.prevMonthBtn.addEventListener('click', () => this.changeCalendarMonth(-1));
+            if (this.elements.nextMonthBtn) this.elements.nextMonthBtn.addEventListener('click', () => this.changeCalendarMonth(1));
+
 
             console.log("Event listeners setup complete.");
         },
 
-
-        // All other methods (navigateTo, handleRegistration, handleBaseline, task rendering,
-        // swipe logic, calendar logic, modal handling, etc.) remain the same as the
-        // previously corrected version. Make sure they are all present.
-        // For brevity, I'm not repeating the entire 1000+ lines of script.js here.
-        // Just ensure the `App.elements` and `setupEventListeners` are updated as shown above.
-
-        // ... (ensure ALL other methods from the previous FULL script.js are here)
         navigateTo(screenName) {
             const allScreens = ['welcomeScreen', 'registrationScreen', 'baselineScreen', 'dashboardScreen', 'settingsScreen'];
             let currentVisibleScreen = null;
@@ -249,21 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (this.elements[screenName + 'Screen']) {
                 this.elements[screenName + 'Screen'].classList.remove('is-hidden');
-                // Only update previousScreen if not going to settings and current screen is different
                 if (screenName !== 'settings' && currentVisibleScreen !== screenName) { 
                     this.state.previousScreen = currentVisibleScreen || this.state.previousScreen;
                 }
                 this.state.currentScreen = screenName;
-                if (this.elements.fabContainer) {
-                    if (screenName === 'dashboard') {
-                        this.elements.fabContainer.classList.remove('is-hidden');
-                    } else {
-                        this.elements.fabContainer.classList.add('is-hidden');
-                        if(this.elements.fabContainer.classList.contains('is-active')) {
-                            this.elements.fabContainer.classList.remove('is-active');
-                        }
-                    }
-                }
+                // Hamburger menu is part of navbar, always potentially visible.
+                // No FAB to hide/show anymore.
             } else { 
                 console.error("Screen not found:", screenName); 
                 this.elements.welcomeScreen?.classList.remove('is-hidden'); 
@@ -272,6 +213,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (screenName === 'dashboard') this.renderDashboard();
         },
+
+
+        // All other methods (handleRegistration, handleBaseline, task rendering,
+        // swipe logic, calendar logic, modal handling, etc.) remain the same as the
+        // previously corrected full version. For brevity, not repeating all.
+        // Ensure they are all present in your final script.js.
+        // ... (ensure ALL other methods from the previous FULL script.js are here)
         handleRegistration() { console.log("handleRegistration called."); const nameEl = document.getElementById('name'); const ageEl = document.getElementById('age'); const genderEl = document.getElementById('gender'); const weightEl = document.getElementById('weight'); const heightEl = document.getElementById('height'); if (!nameEl || !ageEl || !genderEl || !weightEl || !heightEl) { console.error("One or more registration form field elements not found by ID."); this.showInAppNotification("A critical form error occurred. Please refresh and try again.", "is-danger"); return; } const name = nameEl.value.trim(); const age = parseInt(ageEl.value); const gender = genderEl.value; const weight = parseFloat(weightEl.value); const height = parseInt(heightEl.value); console.log("Form values before validation:", { name, age, gender, weight, height }); if (!name || isNaN(age) || age <= 0 || !gender || isNaN(weight) || weight <=0 || isNaN(height) || height <= 0) { console.log("Registration validation failed. Values:", { name, age, gender, weight, height }); this.showInAppNotification("Please fill all fields correctly with valid values.", "is-danger"); return; } console.log("Registration validation passed."); this.state.userData.name = name; this.state.userData.age = age; this.state.userData.gender = gender; this.state.userData.initialWeight = weight; this.state.userData.currentWeight = weight; this.state.userData.height = height; this.state.userData.isRegistered = true; this.state.userData.startDate = this.state.today; this.state.userData.lastLoginDate = this.state.today; const heightInMeters = height / 100; this.state.userData.idealWeight = (22.5 * Math.pow(heightInMeters, 2)).toFixed(1); this.state.userData.caloricDeficitTarget = 500; this.saveData(); this.addPoints(10, "Registration Complete"); this.navigateTo('baseline'); console.log("Navigating to baseline screen."); },
         updateFooterYear() { if (this.elements.currentYear) this.elements.currentYear.textContent = new Date().getFullYear(); },
         registerServiceWorker() { if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js').then(reg => console.log('SW registered:', reg.scope)).catch(err => console.error('SW reg failed:', err)); } },
@@ -313,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
         handleTouchEnd(event) { if (!this.state.swipe.activeCard) return; this.state.swipe.touchendX = event.changedTouches[0].screenX; const deltaX = this.state.swipe.touchendX - this.state.swipe.touchstartX; const card = this.state.swipe.activeCard; card.classList.remove('is-swiping'); card.style.transform = ''; if (deltaX < -this.state.swipe.threshold) { card.classList.add('is-hiding-swipe'); const taskKey = card.id.replace('-task', ''); const todayLog = this.getTodayLog(); if (todayLog && todayLog.tasksCompleted && todayLog.tasksCompleted[taskKey]) { if (typeof todayLog.tasksCompleted[taskKey] !== 'object') { todayLog.tasksCompleted[taskKey] = { completed: true, swipedHidden: true }; } else { todayLog.tasksCompleted[taskKey].swipedHidden = true; } this.saveData(); } setTimeout(() => { card.parentElement?.classList.add('is-hidden'); }, 300); } this.state.swipe.activeCard = null; },
         checkDayCompletionStatus() { const todayLog = this.getTodayLog(); if (!this.elements.completeDayBtn || !this.elements.dailyCompletionMessage) return; if (!todayLog || !todayLog.tasksCompleted) { this.elements.completeDayBtn.disabled = true; return; } const allTasks = ['sleep', 'weightControl', 'exercise', 'peaceOfMind', 'makeMeQuit']; const completedTasksCount = allTasks.filter(task => todayLog.tasksCompleted[task]?.completed).length; const allTasksCompleted = completedTasksCount === allTasks.length; this.elements.completeDayBtn.disabled = !allTasksCompleted || this.state.isDayCompleted; this.elements.completeDayBtn.textContent = this.state.isDayCompleted ? "Day Already Completed" : (allTasksCompleted ? "Mark Day as Complete" : `Complete ${allTasks.length - completedTasksCount} more tasks`); if (this.state.isDayCompleted) { this.elements.dailyCompletionMessage.textContent = "Great job! You've completed all tasks for today."; this.elements.dailyCompletionMessage.className = 'notification is-success mt-3'; this.elements.dailyCompletionMessage.classList.remove('is-hidden'); } else { this.elements.dailyCompletionMessage.classList.add('is-hidden'); } },
         handleCompleteDay() { if (this.state.isDayCompleted) return; this.state.isDayCompleted = true; const todayLog = this.getTodayLog(); todayLog.dayCompleted = true; this.addPoints(25, "All Daily Tasks Completed!"); this.sendNotification("Day Complete!", "Awesome work, you've completed all tasks for today!"); this.showInAppNotification("Day marked as complete! Fantastic effort!", "is-success"); this.saveData(); this.checkDayCompletionStatus(); if (this.isWeekComplete()) this.handleWeekCompletion(); },
-        isWeekComplete() { const W = this.state.currentChallengeWeek; const startDate = new Date(this.state.userData.startDate); let daysCompletedThisWeek = 0; for (let i = 0; i < 7; i++) { const dayToCheck = new Date(startDate); dayToCheck.setDate(startDate.getDate() + (W - 1) * 7 + i); const dayKey = dayToCheck.toISOString().split('T')[0]; if (this.state.userData.dailyLogs[dayKey] && this.state.userData.dailyLogs[dayKey].dayCompleted) { daysCompletedThisWeek++; } } return daysCompletedThisWeek >= 5; },
+        isWeekComplete() { const W = this.state.currentChallengeWeek; const startDate = new Date(this.state.userData.startDate); let daysCompletedThisWeek = 0; for (let i = 0; i < 7; i++) { const dayToCheck = new Date(startDate); dayToCheck.setDate(startDate.getDate() + (W - 1) * 7 + i); const dayKey = dayToCheck.toISOString().split('T')[0]; if (this.state.userData.dailyLogs[dateKey] && this.state.userData.dailyLogs[dateKey].dayCompleted) { daysCompletedThisWeek++; } } return daysCompletedThisWeek >= 5; },
         handleWeekCompletion() { const W = this.state.currentChallengeWeek; const badgeName = `Week ${W} Warrior`; if (!this.state.userData.badges.includes(badgeName)) { this.state.userData.badges.push(badgeName); this.addPoints(100, `Completed Week ${W}`); this.showInAppNotification(`Congrats! You've earned the "${badgeName}" badge!`, "is-success", 10000); this.sendNotification("Week Complete!", `You've conquered Week ${W}! Keep it up!`); } this.saveData(); },
         addPoints(amount, reason) { this.state.userData.points = (this.state.userData.points || 0) + amount; console.log(`+${amount} points for: ${reason}`); this.updateUserDisplay(); },
         handleGetMotivation() { if(!this.elements.motivationAreaSelect || !this.elements.motivationMessage) return; const area = this.elements.motivationAreaSelect.value; this.elements.motivationMessage.innerHTML = "<p>Fetching motivation (simulated)...</p>"; const userContext = { area: area, name: this.state.userData.name, currentWeek: this.state.currentChallengeWeek, points: this.state.userData.points, }; fetch(this.MOTIVATION_API_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(userContext) }) .then(response => { if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`); return response.json(); }) .then(data => { this.elements.motivationMessage.innerHTML = `<p>${data.motivationSpeech || "Keep going, you're doing great!"}</p>`; }) .catch(error => { console.warn("Motivate Me API call failed (expected for simulation):", error); this.elements.motivationMessage.innerHTML = `<p class="has-text-weight-bold">Simulated Motivation for ${area.replace(/([A-Z])/g, ' $1')}:</p><p>Hey ${this.state.userData.name || 'there'}! Remember why you started. Small steps in ${area.replace(/([A-Z])/g, ' $1')} build momentum. You're in week ${this.state.currentChallengeWeek}. You've got this! Try one small part.</p><p><small>(This is a simulated response.)</small></p>`; }); },
@@ -324,6 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkForMissedDays() { if (!this.state.userData || !this.state.userData.lastLoginDate) return; const lastLogin = new Date(this.state.userData.lastLoginDate); const today = new Date(this.state.today); const diffTime = today - lastLogin; const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); if (diffDays > 1) { this.showInAppNotification(`Welcome back, ${this.state.userData.name}! It's been ${diffDays} days. Glad to see you!`, "is-info", 10000); } else if (diffDays === 1 && this.state.userData.lastLoginDate !== this.state.today) { this.showInAppNotification(`Welcome back, ${this.state.userData.name}! Ready for another great day?`, "is-info", 7000); } this.state.userData.lastLoginDate = this.state.today; this.saveData(); },
         renderCalendar(dateToDisplay = this.state.calendar.currentDisplayDate) { if (!this.elements.calendarGrid || !this.elements.calendarMonthYear) return; this.state.calendar.currentDisplayDate = new Date(dateToDisplay); const year = this.state.calendar.currentDisplayDate.getFullYear(); const month = this.state.calendar.currentDisplayDate.getMonth(); this.elements.calendarMonthYear.textContent = `${this.state.calendar.currentDisplayDate.toLocaleString('default', { month: 'long' })} ${year}`; const dayCells = this.elements.calendarGrid.querySelectorAll('.calendar-day'); dayCells.forEach(cell => cell.remove()); const firstDayOfMonth = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); for (let i = 0; i < firstDayOfMonth; i++) { const emptyCell = document.createElement('div'); emptyCell.classList.add('calendar-day', 'is-other-month'); this.elements.calendarGrid.appendChild(emptyCell); } for (let day = 1; day <= daysInMonth; day++) { const dayCell = document.createElement('div'); dayCell.classList.add('calendar-day'); dayCell.textContent = day; const currentDate = new Date(year, month, day); const dateKey = currentDate.toISOString().split('T')[0]; if (this.state.userData.dailyLogs[dateKey] && this.state.userData.dailyLogs[dateKey].dayCompleted) { dayCell.classList.add('is-completed-day'); } if (dateKey === this.state.today) { dayCell.classList.add('is-today'); } this.elements.calendarGrid.appendChild(dayCell); } },
         changeCalendarMonth(monthOffset) { this.state.calendar.currentDisplayDate.setMonth(this.state.calendar.currentDisplayDate.getMonth() + monthOffset); this.renderCalendar(); },
+
     };
 
     App.init();

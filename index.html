@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark-mode"> <!-- DARK MODE DEFAULT: Added 'dark-mode' class here -->
+<html lang="en"> <!-- Default is now "Hello UI" light theme -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,28 +8,42 @@
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- 'black-translucent' for dark mode might look good -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="icon" href="icons/icon-32x32.png" type="image/png">
 </head>
 <body>
     <section class="section py-4 app-wrapper">
         <div class="container">
-            <nav class="navbar is-primary mb-4" role="navigation" aria-label="main navigation">
+            <nav class="navbar app-navbar mb-4" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
                     <a class="navbar-item" href="#" id="homeButton">
-                        <h1 class="title is-4 has-text-white">Body & Soul</h1>
+                        <h1 class="title is-4 navbar-title">Body & Soul</h1>
+                    </a>
+                    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenuContent">
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
+                        <span aria-hidden="true"></span>
                     </a>
                 </div>
-                <div id="navbarMenu" class="navbar-menu is-active"> <!-- Keep is-active for simplicity on mobile -->
+                <div id="navbarMenuContent" class="navbar-menu">
+                    <div class="navbar-start">
+                        <!-- Add other main navigation items here if needed -->
+                    </div>
                     <div class="navbar-end">
+                        <a class="navbar-item" id="menuCalendarBtn">
+                             Calendar <!-- CALENDAR ICON -->
+                        </a>
+                        <a class="navbar-item" id="menuSettingsBtn">
+                            ⚙ Settings <!-- GEAR ICON -->
+                        </a>
                         <div class="navbar-item">
-                            <div class="has-text-white has-text-right">
+                            <div class="user-info-navbar has-text-right">
                                 <p id="userNameDisplay" class="is-size-6"></p>
                                 <p class="is-size-7"><strong id="userPointsDisplay">0</strong> Points</p>
                             </div>
                         </div>
-                        <!-- Settings Gear Icon REMOVED from here -->
                     </div>
                 </div>
             </nav>
@@ -37,7 +51,7 @@
             <main id="appContent">
                 <!-- Screen: Welcome -->
                 <section id="welcomeScreen" class="content box">
-                     <h2 class="title is-3 has-text-primary">Welcome to Your Wellness Journey!</h2>
+                     <h2 class="title is-3 screen-title">Welcome to Your Wellness Journey!</h2>
                     <p>Embark on a 10-week challenge to transform your body and mind.</p>
                     <div class="buttons">
                         <button id="startChallengeBtn" class="button is-primary is-medium">Start the Challenge</button>
@@ -47,7 +61,7 @@
 
                 <!-- Screen: Registration -->
                 <section id="registrationScreen" class="content box is-hidden">
-                    <h2 class="title is-3 has-text-primary">Let's Get Started</h2>
+                    <h2 class="title is-3 screen-title">Let's Get Started</h2>
                     <form id="registrationForm">
                         <div class="field"><label class="label" for="name">Name:</label><div class="control"><input class="input" type="text" id="name" required></div></div>
                         <div class="field"><label class="label" for="age">Age:</label><div class="control"><input class="input" type="number" id="age" min="1" required></div></div>
@@ -72,7 +86,7 @@
 
                 <!-- Screen: Baseline Questionnaire -->
                 <section id="baselineScreen" class="content box is-hidden">
-                    <h2 class="title is-3 has-text-primary">Baseline Assessment</h2>
+                    <h2 class="title is-3 screen-title">Baseline Assessment</h2>
                     <p>Let's record your starting point.</p>
                     <form id="baselineForm">
                         <div class="field"><label class="label" for="cardioCapacity">Cardio Capacity (e.g., minutes run/walk, distance):</label><div class="control"><input class="input" type="text" id="cardioCapacity" placeholder="e.g., 5 min run" required></div></div>
@@ -95,7 +109,7 @@
 
                 <!-- Screen: Main Dashboard -->
                 <section id="dashboardScreen" class="is-hidden">
-                    <div class="level"><div class="level-left"><div class="level-item"><h2 id="dashboardTitle" class="title is-3">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2></div></div><div class="level-right"><div class="level-item"><div><p class="heading">Challenge Progress</p><progress id="challengeProgress" class="progress is-success" value="0" max="100"></progress></div></div></div></div>
+                    <div class="level"><div class="level-left"><div class="level-item"><h2 id="dashboardTitle" class="title is-3 screen-title">Daily Tasks - Week <span id="currentWeekDisplay">1</span></h2></div></div><div class="level-right"><div class="level-item"><div><p class="heading">Challenge Progress</p><progress id="challengeProgress" class="progress is-primary" value="0" max="100"></progress></div></div></div></div>
                     <div id="dailyTasksContainer" class="columns is-multiline is-variable is-2"></div>
                     <div class="buttons is-centered mt-5"><button id="motivateMeBtn" class="button is-warning is-medium">Motivate Me Now!</button><button id="completeDayBtn" class="button is-primary is-medium">Mark Day as Complete</button></div>
                     <div id="dailyCompletionMessage" class="notification is-hidden mt-3"></div>
@@ -103,7 +117,7 @@
 
                 <!-- Screen: Settings -->
                 <section id="settingsScreen" class="content box is-hidden">
-                    <h2 class="title is-3 has-text-primary">Settings</h2>
+                    <h2 class="title is-3 screen-title">Settings</h2>
                     <div class="field">
                         <label class="label" for="darkModeToggle">Dark Mode</label>
                         <div class="control">
@@ -115,12 +129,10 @@
                         <p class="help">Toggle to switch between light and dark themes.</p>
                     </div>
                     <hr>
-                    <!-- Consider adding more settings here in the future -->
-                    <!-- e.g., Reset Progress, Export Data (simulated) -->
-                    <button id="backToDashboardBtn" class="button is-link">Back to Dashboard</button>
+                    <button id="backToDashboardBtn" class="button is-link">Back to Main Screen</button>
                 </section>
 
-                <!-- Modals -->
+                <!-- Modals (No change to their internal structure) -->
                 <div id="motivateModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Need a Boost?</p><button class="delete" aria-label="close" data-target-modal="motivateModal"></button></header><section class="modal-card-body"><p>Which area are you feeling unmotivated about?</p><div class="field"><div class="control"><div class="select is-fullwidth"><select id="motivationAreaSelect"><option value="sleep">Sleep</option><option value="weightControl">Weight Control</option><option value="exercise">Exercise</option><option value="peaceOfMind">Peace of Mind</option><option value="makeMeQuit">Make Me Quit</option></select></div></div></div><div id="motivationMessage" class="content mt-3 p-2 has-background-light" style="min-height: 50px;"></div></section><footer class="modal-card-foot is-justify-content-flex-end"><button id="getMotivationBtn" class="button is-primary">Get Motivation</button><button class="button closeModalBtn" data-target-modal="motivateModal">Cancel</button></footer></div></div>
                 <div id="llmChatModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Talk About Stress Triggers</p><button class="delete" aria-label="close" data-target-modal="llmChatModal"></button></header><section class="modal-card-body"><p>Describe what's on your mind. (This is a simulated chat)</p><div class="field"><div class="control"><textarea id="llmChatInput" class="textarea" rows="4" placeholder="Type here..."></textarea></div></div><div id="llmChatResponse" class="content mt-3 p-2 has-background-light" style="min-height: 100px; max-height: 200px; overflow-y: auto;"></div></section><footer class="modal-card-foot is-justify-content-flex-end"><button id="sendToLlmBtn" class="button is-primary">Send</button><button class="button closeModalBtn" data-target-modal="llmChatModal">Close</button></footer></div></div>
                 <div id="educationModal" class="modal"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p id="educationTitle" class="modal-card-title">Education</p><button class="delete" aria-label="close" data-target-modal="educationModal"></button></header><section class="modal-card-body content"><p id="educationText"></p></section><footer class="modal-card-foot is-justify-content-flex-end"><button class="button closeModalBtn" data-target-modal="educationModal">Close</button></footer></div></div>
@@ -129,20 +141,7 @@
         </div>
     </section>
 
-    <!-- Floating Action Button Menu -->
-    <div class="fab-container is-hidden"> <!-- Start FAB hidden, JS will show on dashboard -->
-        <button class="fab-main button is-primary is-rounded" id="fabMainBtn">
-            <span class="icon">✚</span>
-        </button>
-        <div class="fab-options">
-            <button class="fab-option button is-link is-rounded" id="fabCalendarBtn" title="View Calendar">
-                <span class="icon"></span> <!-- CALENDAR ICON -->
-            </button>
-            <button class="fab-option button is-info is-rounded" id="fabSettingsBtn" title="Settings">
-                <span class="icon">⚙</span> <!-- GEAR ICON -->
-            </button>
-        </div>
-    </div>
+    <!-- FAB REMOVED -->
 
     <div id="inAppNotification" class="notification is-hidden is-fixed-bottom-custom p-3 m-3">
         <button id="dismissNotificationBtn" class="delete"></button>
